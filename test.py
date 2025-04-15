@@ -1,24 +1,29 @@
 import face_recognition
 import cv2
 import numpy as np
+import os
+
+directory = 'image_source'
 
 video_capture = cv2.VideoCapture(0)
 
-duterte_image = face_recognition.load_image_file("duterte.jpg")
-duterte_face_encoding = face_recognition.face_encodings(duterte_image)[0]
+known_face_encodings = []
+known_face_names = []
 
-chanz_image = face_recognition.load_image_file('chanz.jpg')
-chanz_face_encoding = face_recognition.face_encodings(chanz_image)[0]
+for filename in os.listdir(directory):
+    file_path = os.path.join(directory, filename)
+    if os.path.isfile(file_path):
+        image = face_recognition.load_image_file(file_path)
+        image_face_encoding = face_recognition.face_encodings(image)[0]
 
+        
+        known_face_encodings.append(image_face_encoding)
+        face_name = os.path.basename(os.path.splitext(file_path)[0]).capitalize()
+        print(face_name)
+        known_face_names.append(face_name)
 
-known_face_encodings = [
-    duterte_face_encoding,
-    chanz_face_encoding
-]
-known_face_names = [
-    "Duterte",
-    "Chanz"
-]
+print(f'Known Face Encodings: {known_face_encodings}')
+print(f'Known Face Names: {known_face_names}')
 
 face_locations = []
 face_encodings = []
