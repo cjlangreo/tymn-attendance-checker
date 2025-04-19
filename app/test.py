@@ -72,11 +72,11 @@ while True:
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
+    x, y, width, height = 500, 500, 1000, 1000
 
-
-    resized_frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)
-    cropped_frame = resized_frame[500:1500, 0:1000]
-    cv2.imshow('Video', cropped_frame)
+    cropped_frame = frame[y:y+height, x:x+width]
+    resized_frame = cv2.resize(cropped_frame, (0,0), fx=0.5, fy=0.5)
+    cv2.imshow('Video', resized_frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
