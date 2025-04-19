@@ -33,11 +33,14 @@ process_this_frame = True
 while True:
     ret, frame = video_capture.read()
 
+    frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
+
+
     if process_this_frame:
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
-        rgb_small_frame = small_frame[:, :, ::-1]
-        rgb_small_frame = cv2.cvtColor(rgb_small_frame, cv2.COLOR_BGR2RGB)
+        rgb_small_frame = cv2.cvtColor(small_frame, cv2.COLOR_BGR2RGB)
         
         face_locations = face_recognition.face_locations(rgb_small_frame)
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
@@ -69,7 +72,11 @@ while True:
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
-    cv2.imshow('Video', frame)
+
+
+    resized_frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)
+    cropped_frame = resized_frame[500:1500, 0:1000]
+    cv2.imshow('Video', cropped_frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
