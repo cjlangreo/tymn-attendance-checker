@@ -72,9 +72,10 @@ while True:
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
-    x, y, width, height = 500, 500, 1000, 1000
+    x, y, width, height = 0, 400, 1000, 1000
 
-    cropped_frame = frame[y:y+height, x:x+width]
+    flipped_frame = cv2.flip(frame, 1)
+    cropped_frame = flipped_frame[y:y+height, x:x+width]
     resized_frame = cv2.resize(cropped_frame, (0,0), fx=0.5, fy=0.5)
     cv2.imshow('Video', resized_frame)
 
