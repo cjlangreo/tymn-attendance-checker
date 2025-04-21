@@ -4,7 +4,7 @@ Hello
 import sqlite3
 from os import path
 
-db_path = 'src/faces.db'
+db_path = 'src/lib/faces.db'
 
 if not path.exists(db_path):
     print('Database file doesn\'t exist, creating it now.')
@@ -67,7 +67,7 @@ def pull_from_db(id : int, values : tuple | None = None):
         res = cur.execute(f"SELECT {values} FROM registered_students WHERE id={id}")
     else:
         res = cur.execute(f"SELECT * FROM registered_students WHERE id={id}")
-        
+
     con.commit()
     con.close()
     
