@@ -2,15 +2,10 @@ import face_recognition
 import cv2
 import numpy as np
 import os
-import sqlite3
-
+import tkinter
 
 
 def start_loop():
-    db_con = sqlite3.connect("faces.db")
-    db_cur = db_con.cursor()
-    
-    
     directory = 'image_source'
 
     video_capture = cv2.VideoCapture(0)
@@ -84,9 +79,14 @@ def start_loop():
         cropped_frame = flipped_frame[y:y+height, x:x+width]
         resized_frame = cv2.resize(cropped_frame, (0,0), fx=0.5, fy=0.5)
         cv2.imshow('Video', resized_frame)
-
+        root = tkinter.Tk()
+        label = tkinter.Label(root, image=frame)
+        label.pack()
+        root.mainloop()
+        
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+    start_loop()
     video_capture.release()
     cv2.destroyAllWindows()

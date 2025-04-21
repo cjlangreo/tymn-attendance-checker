@@ -41,7 +41,7 @@ con = sqlite3.connect(db_path)
 cur = con.cursor()
 
 
-def insert_into_db(binary_img, id : int, name : str, course : str, year : int) -> None:
+def insert_into_db(id : int, name : str, binary_img, course : str, year : int) -> None:
     """
     Inserts passed arguments as values in a new record into the database
 
@@ -60,15 +60,23 @@ def insert_into_db(binary_img, id : int, name : str, course : str, year : int) -
     cur.execute("INSERT INTO registered_students VALUES(?, ?, ?, ?, ?)", data_to_db)
 
     con.commit()
-    con.close()
 
 def pull_from_db(id : int, values : tuple | None = None):
+    """
+    Queries the database.
+
+    Args:
+        id (int): The student's ID to filter the query.
+        values (tuple): A tuple of values to filter the query.
+
+    Returns:
+        tuple: A tuple of the query.
+    """
     if values:
         res = cur.execute(f"SELECT {values} FROM registered_students WHERE id={id}")
     else:
         res = cur.execute(f"SELECT * FROM registered_students WHERE id={id}")
 
     con.commit()
-    con.close()
     
     return res.fetchone()
