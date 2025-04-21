@@ -2,4 +2,5 @@
 .vscode/
 dlib/
 **/__pycache__/
-**/faces.db
+**/faces.dbvenv/
+venv/
