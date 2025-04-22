@@ -6,6 +6,24 @@ from os import path
 
 db_path = 'src/lib/faces.db'
 
+class ColumnFilters:
+    ID = 'id'
+    NAME = 'name'
+    FACE_ENCODINGS = 'face_encodings'
+    COURSE = 'course'
+    YEAR = 'year'
+
+class Courses:
+    BSCS = 'BSCS'
+    BSIT = 'BSIT'
+    BSA = 'BSA'
+    BSHM = 'BSHM'
+    BSEE = 'BSEE'
+    BSCE = 'BSCE'
+    BSME = 'BSME'
+    BSOA = 'BSOA'
+    BSBA = 'BSBA'
+
 if not path.exists(db_path):
     print('Database file doesn\'t exist, creating it now.')
     open(db_path, 'w')
@@ -61,22 +79,21 @@ def insert_into_db(id : int, name : str, binary_img, course : str, year : int) -
 
     con.commit()
 
-def pull_from_db(id : int, values : tuple | None = None):
+def pull_from_db(values : tuple[ColumnFilters] | None = '*', filter : tuple[ColumnFilters, any] | None = '') -> list[tuple]:
     """
     Queries the database.
 
     Args:
-        id (int): The student's ID to filter the query.
-        values (tuple): A tuple of values to filter the query.
+        values (tuple[ColumnFilters]): A tuple[ColumnFilters] to select what columns to query.
+        filter (tuple[ColumnFilters, Courses]): A tuple[ColumnFilters, any] to filter the query by column with a value.
 
     Returns:
-        tuple: A tuple of the query.
+        list[tuple]: A list containing all the records from the query.
     """
-    if values:
-        res = cur.execute(f"SELECT {values} FROM registered_students WHERE id={id}")
-    else:
-        res = cur.execute(f"SELECT * FROM registered_students WHERE id={id}")
 
-    con.commit()
-    
-    return res.fetchone()
+    if filter:
+        filter = f" WHERE {filter[0]}='{filter[1]}'"
+
+    res = cur.execute(f"SELECT {values} FROM registered_students{filter}")
+
+    return res.fetchall()
