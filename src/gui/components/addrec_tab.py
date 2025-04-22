@@ -1,8 +1,143 @@
 import tkinter as tk
+from tkinter import ttk
+import tkinter.font as tkFont
 from fakedb import conn, cursor
 
+# Font Default
+def set_font(size, weight):
+  return tkFont.Font(family="Ubuntu", size=size, weight=weight)
+
 def addrec_tab(main_frame):
-  addrec_frame = tk.Frame(main_frame)
-  addrec_label = tk.Label(addrec_frame, text="Add New Student Record", font=("Ubuntu", 32))
-  addrec_label.pack()
-  addrec_frame.pack()
+  addrec_frame = tk.Frame(main_frame, width=900, height=800, bg="#222")
+  addrec_frame.propagate(False)
+  addrec_frame.pack(padx=40, pady=40)
+
+  addrec_frame.radio_off = tk.PhotoImage(file="src/gui/assets/radio_button_unchecked.png", master=main_frame)
+  addrec_frame.radio_on = tk.PhotoImage(file="src/gui/assets/radio_button_checked.png", master=main_frame)
+
+  radio_off = addrec_frame.radio_off
+  radio_on = addrec_frame.radio_on
+
+  tk.Label(addrec_frame, text="Add New Student", font=set_font(40, "bold"), bg=addrec_frame["bg"], fg="#d8d8d8").place(x=0, y=0)
+  year_var = tk.StringVar(addrec_frame)
+
+  # Name
+  tk.Label(addrec_frame, text="Full Name", font=set_font(20, "normal"), bg="#222", fg="#d8d8d8").place(x=0, y=80)
+  tk.Label(addrec_frame, text="( Last Name,   First Name,   M.I. )", font=set_font(16, "normal"), bg="#222", fg="#5b5b5b").place(x=125, y=85)
+
+  style = ttk.Style()
+  style.theme_use("clam")
+
+  style.configure(
+    "Custom.TEntry",
+    relief="flat",
+    foreground="#d8d8d8",
+    fieldbackground="#222",
+    background="#222",
+    padding=10,
+    insertcolor="#E36A00",
+    insertwidth=2
+  )
+  name_entry = ttk.Entry(addrec_frame, style="Custom.TEntry", font=set_font(20, "normal"))
+  name_entry.place(x=0, y=120, width=550, height=60)
+
+  # Course
+  course_frame = tk.Frame(addrec_frame, bg="#222", width=900, height=800)
+  course_frame.place(x=0, y=210)
+  tk.Label(course_frame, text="Course", font=set_font(20, "normal"), bg="#222", fg="#d8d8d8").pack(anchor="w", pady=(0, 10))
+ 
+  course_var = tk.StringVar(course_frame)
+
+  courses = [
+    ("Computer Science", "BSCS"),
+    ("Information Technology", "BSIT"),
+    ("Computer Engineering", "BSCPE")
+  ]
+
+  radio_btns = []
+
+  def selected_course(*args):
+    for btn in radio_btns:
+      if course_var.get() ==btn["value"]:
+        btn.config(fg="#E36A00")
+      else:
+        btn.config(fg="#d8d8d8")
+  course_var.trace_add("write", selected_course)
+
+  for label, value in courses:
+    btn = tk.Radiobutton(
+      course_frame,
+      text=label,
+      image=radio_off,
+      selectimage=radio_on,
+      variable=course_var,
+      value=value,
+      font=set_font(20, "normal"),
+      fg="#d8d8d8",
+      bg="#222",
+      activeforeground="#faa152",
+      activebackground="#222",
+      selectcolor="#222",
+      padx=30,
+      pady=10,
+      bd=0,
+      highlightthickness=0,
+      indicatoron=False,
+      justify="left",
+      compound="left"
+    )
+    btn.pack(anchor="w", padx=20)
+    radio_btns.append(btn)
+
+
+  # Year
+  year_frame = tk.Frame(addrec_frame, bg="#222", width=900, height=800)
+  year_frame.place(x=0, y=420)
+
+  tk.Label(year_frame, text="Year", font=set_font(20, "normal"), bg="#222", fg="#d8d8d8").pack(anchor="w", pady=(0, 10))
+  for year in ["1", "2", "3", "4"]:
+    tk.Radiobutton(
+      year_frame,
+      text=year,
+      variable=year_var,
+      value=year,
+      image=radio_off,
+      selectimage=radio_on,
+      font=set_font(20, "normal"),
+      fg="#d8d8d8",
+      bg="#222",
+      activeforeground="#faa152",
+      activebackground="#222",
+      selectcolor="#222",
+      padx=10,
+      pady=10,
+      bd=0,
+      highlightthickness=0,
+      indicatoron=False,
+      justify="left",
+      compound="left"
+    ).pack(side="left", padx=40)
+
+  # Camera
+  cam_btn = tk.Button(
+    addrec_frame,
+    text="Register Face",
+    font=set_font(20, "normal"),
+    background="#222",
+    foreground="#d8d8d8"
+  )
+  cam_btn.place(x=0, y=550)
+
+  # Submit
+  submit_data = tk.Button(
+    addrec_frame,
+    text="Submit",
+    font=set_font(16, "bold"),
+    background="#E36A00",
+    foreground="#d8d8d8",
+    highlightthickness=0,
+    relief="flat",
+    padx=50,
+    pady=10
+  )
+  submit_data.place(relx=0.5, y=650, anchor="center")

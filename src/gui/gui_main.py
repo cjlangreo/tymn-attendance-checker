@@ -15,7 +15,7 @@ window.configure(background="#222222")
 window.resizable(False, False)
 
 # Navigation Bar Frame
-nav_frame = tk.Frame(window, bg="#1a1a1a", width=300, height=1200)
+nav_frame = tk.Frame(window, bg="#1a1a1a", width=300, height=800)
 nav_frame.pack(side="left")
 nav_frame.propagate(False)
 
@@ -23,7 +23,7 @@ nav_frame.propagate(False)
 main_frame = tk.Frame(window, bg="#222")
 main_frame.pack(side="right")
 main_frame.propagate(False)
-main_frame.configure(width=900, height=1200)
+main_frame.configure(width=900, height=800)
 
 set_nav(nav_frame, main_frame, records_tab, addrec_tab)
 

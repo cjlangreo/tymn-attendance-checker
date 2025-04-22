@@ -2,8 +2,8 @@ import tkinter as tk
 import tkinter.font as tkFont
 
 # Font Default
-def set_font(size):
-  return tkFont.Font(family="Ubuntu", size=size)
+def set_font(size, weight):
+  return tkFont.Font(family="Ubuntu", size=size, weight=weight)
 
 def set_nav(nav_frame, main_frame, records_tab, addrec_tab):
 
@@ -26,7 +26,7 @@ def set_nav(nav_frame, main_frame, records_tab, addrec_tab):
   records_btn = tk.Button(
     nav_frame, 
     text="STUDENT RECORDS", 
-    font=set_font(20),
+    font=set_font(20, "normal"),
     height=1,
     fg="#d8d8d8", 
     bg="#1a1a1a",
@@ -44,7 +44,7 @@ def set_nav(nav_frame, main_frame, records_tab, addrec_tab):
   addrecds_btn = tk.Button(
     nav_frame, 
     text="ADD RECORD", 
-    font=set_font(20),
+    font=set_font(20, "normal"),
     height=1,
     fg="#d8d8d8", 
     bg="#1a1a1a",
