@@ -54,14 +54,16 @@ def records_tab(main_frame):
   # Table
   tree = ttk.Treeview(records_frame, columns=("ID", "Name", "Course", "Year"), show="headings")
   tree.heading("ID", text="ID")
-  tree.heading("Name", text="Name")
-  tree.heading("Course", text="Course")
-  tree.heading("Year", text="Year")
+  tree.heading("Name", text="Name", anchor="w")
+  tree.heading("Course", text="Course", anchor="w")
+  tree.heading("Year", text="Year", anchor="w")
 
   tree.column("ID", width=80, anchor="center")
   tree.column("Name", width=400)
   tree.column("Course", width=220)
   tree.column("Year", width=100)
+
+
 
   tree.pack(anchor="w")
 

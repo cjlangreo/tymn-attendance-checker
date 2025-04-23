@@ -2,10 +2,18 @@ import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkFont
 from fakedb import conn, cursor
+import subprocess
+import threading
+
 
 # Font Default
 def set_font(size, weight):
   return tkFont.Font(family="Ubuntu", size=size, weight=weight)
+
+def open_cam():
+  threading.Thread(
+    target=lambda: subprocess.run(["python3", "imong_script.py"]) # <================================================== [0<>0]
+  )
 
 def addrec_tab(main_frame):
   addrec_frame = tk.Frame(main_frame, width=900, height=800, bg=main_frame["bg"])
@@ -133,7 +141,8 @@ def addrec_tab(main_frame):
     activeforeground="#d8d8d8",
     activebackground="#E36A00",
     highlightbackground="#d8d8d8",
-    cursor="hand2"
+    cursor="hand2",
+    command=open_cam
   )
   cam_btn.place(x=0, y=550)
 
