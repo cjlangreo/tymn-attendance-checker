@@ -8,35 +8,37 @@ def set_font(size, weight):
   return tkFont.Font(family="Ubuntu", size=size, weight=weight)
 
 def addrec_tab(main_frame):
-  addrec_frame = tk.Frame(main_frame, width=900, height=800, bg="#222")
+  addrec_frame = tk.Frame(main_frame, width=900, height=800, bg=main_frame["bg"])
   addrec_frame.propagate(False)
   addrec_frame.pack(padx=40, pady=40)
 
+  tk.Label(addrec_frame, text="Add Student Record", font=set_font(40, "bold"), bg=addrec_frame["bg"], fg="#d8d8d8").place(x=0, y=0)
+  
   addrec_frame.radio_off = tk.PhotoImage(file="src/gui/assets/radio_button_unchecked.png", master=main_frame)
   addrec_frame.radio_on = tk.PhotoImage(file="src/gui/assets/radio_button_checked.png", master=main_frame)
 
   radio_off = addrec_frame.radio_off
   radio_on = addrec_frame.radio_on
 
-  tk.Label(addrec_frame, text="Add New Student", font=set_font(40, "bold"), bg=addrec_frame["bg"], fg="#d8d8d8").place(x=0, y=0)
   year_var = tk.StringVar(addrec_frame)
 
   # Name
   tk.Label(addrec_frame, text="Full Name", font=set_font(20, "normal"), bg="#222", fg="#d8d8d8").place(x=0, y=80)
   tk.Label(addrec_frame, text="( Last Name,   First Name,   M.I. )", font=set_font(16, "normal"), bg="#222", fg="#5b5b5b").place(x=125, y=85)
 
-  style = ttk.Style()
-  style.theme_use("clam")
+  entry_style = ttk.Style()
+  entry_style.theme_use("clam")
 
-  style.configure(
+  entry_style.configure(
     "Custom.TEntry",
     relief="flat",
-    foreground="#d8d8d8",
+    foreground="#adadad",
     fieldbackground="#222",
     background="#222",
     padding=10,
     insertcolor="#E36A00",
-    insertwidth=2
+    insertwidth=2,
+    cursor="hand2"
   )
   name_entry = ttk.Entry(addrec_frame, style="Custom.TEntry", font=set_font(20, "normal"))
   name_entry.place(x=0, y=120, width=550, height=60)
@@ -44,7 +46,7 @@ def addrec_tab(main_frame):
   # Course
   course_frame = tk.Frame(addrec_frame, bg="#222", width=900, height=800)
   course_frame.place(x=0, y=210)
-  tk.Label(course_frame, text="Course", font=set_font(20, "normal"), bg="#222", fg="#d8d8d8").pack(anchor="w", pady=(0, 10))
+  tk.Label(course_frame, text="Course", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").pack(anchor="w", pady=(0, 10))
  
   course_var = tk.StringVar(course_frame)
 
@@ -61,7 +63,7 @@ def addrec_tab(main_frame):
       if course_var.get() ==btn["value"]:
         btn.config(fg="#E36A00")
       else:
-        btn.config(fg="#d8d8d8")
+        btn.config(fg="#adadad")
   course_var.trace_add("write", selected_course)
 
   for label, value in courses:
@@ -73,7 +75,7 @@ def addrec_tab(main_frame):
       variable=course_var,
       value=value,
       font=set_font(20, "normal"),
-      fg="#d8d8d8",
+      fg="#adadad",
       bg="#222",
       activeforeground="#faa152",
       activebackground="#222",
@@ -84,7 +86,8 @@ def addrec_tab(main_frame):
       highlightthickness=0,
       indicatoron=False,
       justify="left",
-      compound="left"
+      compound="left",
+      cursor="hand2"
     )
     btn.pack(anchor="w", padx=20)
     radio_btns.append(btn)
@@ -94,7 +97,7 @@ def addrec_tab(main_frame):
   year_frame = tk.Frame(addrec_frame, bg="#222", width=900, height=800)
   year_frame.place(x=0, y=420)
 
-  tk.Label(year_frame, text="Year", font=set_font(20, "normal"), bg="#222", fg="#d8d8d8").pack(anchor="w", pady=(0, 10))
+  tk.Label(year_frame, text="Year", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").pack(anchor="w", pady=(0, 10))
   for year in ["1", "2", "3", "4"]:
     tk.Radiobutton(
       year_frame,
@@ -104,7 +107,7 @@ def addrec_tab(main_frame):
       image=radio_off,
       selectimage=radio_on,
       font=set_font(20, "normal"),
-      fg="#d8d8d8",
+      fg="#adadad",
       bg="#222",
       activeforeground="#faa152",
       activebackground="#222",
@@ -115,16 +118,22 @@ def addrec_tab(main_frame):
       highlightthickness=0,
       indicatoron=False,
       justify="left",
-      compound="left"
+      compound="left",
+      cursor="hand2"
     ).pack(side="left", padx=40)
 
   # Camera
   cam_btn = tk.Button(
     addrec_frame,
     text="Register Face",
-    font=set_font(20, "normal"),
+    font=set_font(20, "bold"),
+    bd=0,
     background="#222",
-    foreground="#d8d8d8"
+    foreground="#d8d8d8",
+    activeforeground="#d8d8d8",
+    activebackground="#E36A00",
+    highlightbackground="#d8d8d8",
+    cursor="hand2"
   )
   cam_btn.place(x=0, y=550)
 
@@ -138,6 +147,7 @@ def addrec_tab(main_frame):
     highlightthickness=0,
     relief="flat",
     padx=50,
-    pady=10
+    pady=10,
+    cursor="hand2"
   )
   submit_data.place(relx=0.5, y=650, anchor="center")

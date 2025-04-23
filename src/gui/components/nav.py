@@ -25,8 +25,8 @@ def set_nav(nav_frame, main_frame, records_tab, addrec_tab):
   # Nav Buttons
   records_btn = tk.Button(
     nav_frame, 
-    text="STUDENT RECORDS", 
-    font=set_font(20, "normal"),
+    text="Student Records", 
+    font=set_font(16, "bold"),
     height=1,
     fg="#d8d8d8", 
     bg="#1a1a1a",
@@ -43,8 +43,8 @@ def set_nav(nav_frame, main_frame, records_tab, addrec_tab):
 
   addrecds_btn = tk.Button(
     nav_frame, 
-    text="ADD RECORD", 
-    font=set_font(20, "normal"),
+    text="Add Student Record", 
+    font=set_font(16, "bold"),
     height=1,
     fg="#d8d8d8", 
     bg="#1a1a1a",
