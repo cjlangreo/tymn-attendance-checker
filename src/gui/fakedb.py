@@ -1,5 +1,6 @@
 import sqlite3
 
+fakedb_path = "src/gui/test.db"
 # Database
-conn = sqlite3.connect("src/gui/test.db")
-cursor = conn.cursor()
+def connect_db():
+  return sqlite3.connect(fakedb_path)

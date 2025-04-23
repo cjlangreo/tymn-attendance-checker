@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkFont
-from fakedb import cursor
+from fakedb import connect_db
 
 # Font Default
 def set_font(size, weight):
@@ -71,7 +71,9 @@ def records_tab(main_frame):
   def show_records():
     for row in tree.get_children():
       tree.delete(row)
-    
+      
+    conn = connect_db()
+    cursor = conn.cursor()
     cursor.execute("SELECT id, name, course, year FROM registered_students")
     rows = cursor.fetchall()
     for row in rows:

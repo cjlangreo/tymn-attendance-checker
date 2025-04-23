@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkFont
-from fakedb import conn, cursor
 import subprocess
 import threading
+from fakedb import connect_db
 
 
 # Font Default
@@ -15,7 +15,34 @@ def open_cam():
     target=lambda: subprocess.run(["python3", "imong_script.py"]) # <================================================== [0<>0]
   )
 
+
 def addrec_tab(main_frame):
+
+  def add_student():
+    name = name_entry.get().strip()
+    course = course_var.get().strip()
+    year = year_var.get().strip()
+
+    if not name or not course or not year:
+        print("Whoopsie! You missed a spot.")
+        return
+
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute(
+      """
+      INSERT INTO registered_students (name, face_encodings, course, year)
+      VALUES (?, ?, ?, ?)
+    """, (name, None, course, int(year))
+    )
+    conn.commit()
+    conn.close()
+
+    name_entry.delete(0, tk.END)
+    course_var.set(0)
+    year_var.set(0)
+
+
   addrec_frame = tk.Frame(main_frame, width=900, height=800, bg=main_frame["bg"])
   addrec_frame.propagate(False)
   addrec_frame.pack(padx=40, pady=40)
@@ -157,6 +184,7 @@ def addrec_tab(main_frame):
     relief="flat",
     padx=50,
     pady=10,
-    cursor="hand2"
+    cursor="hand2",
+    command=add_student
   )
   submit_data.place(relx=0.5, y=650, anchor="center")
