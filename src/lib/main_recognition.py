@@ -1,92 +1,107 @@
 import face_recognition
 import cv2
 import numpy as np
-import os
-import tkinter
+import db_interface
+from enum import Enum
+from PIL import Image, ImageDraw, ImageFont
 
+video_capture = cv2.VideoCapture(0)
 
-def start_loop():
-    directory = 'image_source'
+class RecognitionModes(Enum):
+    REGISTER = 1
+    RECOGNIZE = 2
 
-    video_capture = cv2.VideoCapture(0)
-    known_face_encodings = []
+def retrieve_db_data():
+    records = db_interface.pull_from_db()
+
+    known_face_ids = []
     known_face_names = []
+    known_face_encodings = []
+    known_face_courses = []
+    known_face_years = []
+    known_records = [known_face_ids, known_face_names, known_face_encodings, known_face_courses, known_face_years]
 
-    for filename in os.listdir(directory):
-        file_path = os.path.join(directory, filename)
-        if os.path.isfile(file_path):
-            image = face_recognition.load_image_file(file_path)
-            image_face_encoding = face_recognition.face_encodings(image)[0]
+    # We take the records list of type list[tuple] returned from db_interface.pull_from_db() and supply the known_records' lists with those records.
+    for record in records:
+        # record = (id, name, face_encodings, course, year)
+        for known_record, column in zip(known_records, record):
+            known_record.append(column)
+        # for i in range(len(record)):
+            # known_records[i].append(record[i])
 
-            
-            known_face_encodings.append(image_face_encoding)
-            face_name = os.path.basename(os.path.splitext(file_path)[0]).capitalize()
-            print(face_name)
-            known_face_names.append(face_name)
+    return known_records
 
-    print(f'Known Face Encodings: {known_face_encodings}')
-    print(f'Known Face Names: {known_face_names}')
+
+def retrieve_frame(mode : RecognitionModes | None = None) -> Image:
+    known_records = retrieve_db_data()
+    # known_records = [id, name, face_encodings, course, year]
+
+    print(known_records)
+    print(f'Known Face ID: {known_records[0]}')
+    print(f'Known Face Names: {known_records[1]}')
+    print(f'Known Face Encodings: {known_records[2]}')
+    print(f'Known Face Course: {known_records[3]}')
+    print(f'Known Face Year: {known_records[4]}')
 
     face_locations = []
     face_encodings = []
     face_names = []
-    process_this_frame = True
 
-    while True:
-        ret, frame = video_capture.read()
-
-        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
-
-        if process_this_frame:
-            small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25) # Resize the frame to make it smaller to make it faster
-
-            rgb_small_frame = cv2.cvtColor(small_frame, cv2.COLOR_BGR2RGB)
-            
-            face_locations = face_recognition.face_locations(rgb_small_frame) # Get all faces in the frame
-            face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations) # Encode those faces
-
-            face_names = []
-            for face_encoding in face_encodings:
-                matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-                name = "Unknown"
-
-                face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-                best_match_index = np.argmin(face_distances) # find the smallest value of 'face_distances' by index
-
-                if matches[best_match_index]:
-                    name = known_face_names[best_match_index]
-
-                face_names.append(name)
-
-        process_this_frame = not process_this_frame
+    frame = video_capture.read()[1]
+    rotated_frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+    flipped_frame = cv2.flip(rotated_frame, 1)
+    rgb_frame = cv2.cvtColor(flipped_frame, cv2.COLOR_BGR2RGB)
+    x, y, width, height = 125, 600, 700, 700
+    cropped_frame = rgb_frame[y:y+height, x:x+width]
 
 
-        for (top, right, bottom, left), name in zip(face_locations, face_names):
-            top *= 4
-            right *= 4
-            bottom *= 4
-            left *= 4
+    resized_frame = cv2.resize(cropped_frame, (0,0), fx=0.25, fy=0.25)
+    face_locations = face_recognition.face_locations(resized_frame) # Get all faces in the frame
+    face_encodings = face_recognition.face_encodings(resized_frame, face_locations) # Encode those faces
 
-            cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+    face_names = []
+    
+    # Just for the names
+    for face_encoding in face_encodings:
+        name = "Unknown"
+        if len(known_records[2]) > 0: # Because compare_faces breaks when face_encodings is empty.
+            matches = face_recognition.compare_faces(known_records[2], face_encoding)
+            face_distances = face_recognition.face_distance(known_records[2], face_encoding)
+            best_match_index = np.argmin(face_distances) # find the smallest value of 'face_distances' by index
 
-            cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-            font = cv2.FONT_HERSHEY_DUPLEX
-            cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+            if matches[best_match_index]:
+                name = known_records[1][best_match_index]
 
-        x, y, width, height = 0, 400, 1000, 1000
+        face_names.append(name)
 
-        flipped_frame = cv2.flip(frame, 1)
-        cropped_frame = flipped_frame[y:y+height, x:x+width]
-        resized_frame = cv2.resize(cropped_frame, (0,0), fx=0.5, fy=0.5)
-        cv2.imshow('Video', resized_frame)
-        root = tkinter.Tk()
-        label = tkinter.Label(root, image=frame)
-        label.pack()
-        root.mainloop()
+    if face_locations:
+        print(f'Faces detected: {len(face_locations)} at {face_locations}')
+
+    cv2_image : Image = Image.fromarray(cropped_frame)
+    new_cv2_image = ImageDraw.ImageDraw(cv2_image)
+    
+    # This section just draws stuff on the frame.
+    for (top, right, bottom, left), name in zip(face_locations, face_names):
+        top *= 4
+        left *= 4
+        right *= 4
+        bottom *= 4
+
+        text_to_draw = f"Name: {name}\nID: {top}"
+
+
+        new_cv2_image.rectangle([left, top, right, bottom], width=10) # The bounding square
+        # new_cv2_image.rectangle([left, bottom, right, bottom + 100], fill='red')
+        image_font = ImageFont.truetype('Lexend.ttf', size=15)
+        new_cv2_image.multiline_text([left, bottom, right, bottom + 50], text=text_to_draw, font=image_font)
         
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+    # new_cv2_image.point([50, 5], fill='red')
+    # new_cv2_image.point([100, 100], fill='blue')
 
-    start_loop()
-    video_capture.release()
-    cv2.destroyAllWindows()
+    return cv2_image
+
+
+    
+
+        
+
