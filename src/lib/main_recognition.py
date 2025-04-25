@@ -62,17 +62,16 @@ def retrieve_frame(mode : RecognitionModes | None = None) -> Image:
     face_names = []
     
     # Just for the names
-    for face_encoding in face_encodings:
-        name = "Unknown"
-        if len(known_records[2]) > 0: # Because compare_faces breaks when face_encodings is empty.
-            matches = face_recognition.compare_faces(known_records[2], face_encoding)
-            face_distances = face_recognition.face_distance(known_records[2], face_encoding)
-            best_match_index = np.argmin(face_distances) # find the smallest value of 'face_distances' by index
+    name = "Unknown"
+    if len(known_records[2]) > 0: # Because compare_faces breaks when face_encodings is empty.
+        matches = face_recognition.compare_faces(known_records[2], face_encodings[0])
+        face_distances = face_recognition.face_distance(known_records[2], face_encodings[0])
+        best_match_index = np.argmin(face_distances) # find the smallest value of 'face_distances' by index
 
-            if matches[best_match_index]:
-                name = known_records[1][best_match_index]
+        if matches[best_match_index]:
+            name = known_records[1][best_match_index]
 
-        face_names.append(name)
+    face_names.append(name)
 
     if face_locations:
         print(f'Faces detected: {len(face_locations)} at {face_locations}')
