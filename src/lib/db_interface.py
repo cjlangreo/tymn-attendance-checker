@@ -9,7 +9,7 @@ db_path = 'src/lib/faces.db'
 class ColumnFilters:
     ID = 'id'
     NAME = 'name'
-    FACE_ENCODINGS = 'face_encodings'
+    FACE_ENCODING = 'face_encoding'
     COURSE = 'course'
     YEAR = 'year'
 
@@ -43,7 +43,7 @@ if not path.exists(db_path):
                 CREATE TABLE "registered_students" (
                 "id"	INTEGER,
                 "name"	TEXT NOT NULL,
-                "face_encodings"	BLOB NOT NULL,
+                "face_encoding"	BLOB NOT NULL,
                 "course"	TEXT NOT NULL,
                 "year"	INTEGER NOT NULL,
                 FOREIGN KEY("course") REFERENCES "courses"("course") ON UPDATE CASCADE,
@@ -55,22 +55,22 @@ if not path.exists(db_path):
 
 
 
-con = sqlite3.connect(db_path)
+con = sqlite3.connect(db_path, check_same_thread=False)
 cur = con.cursor()
 
 
-def insert_into_db(id : int, name : str, binary_img, course : str, year : int) -> None:
+def insert_into_db(id : int, name : str, face_encoding, course : str, year : int) -> None:
     """
     Inserts passed arguments as values in a new record into the database
 
-    :param binary_img: A binary array of an image from image_to_db(img_path)
+    :param face_encoding: A binary array of an image from image_to_db(img_path)
     :param id: The new record's ID i.e. student ID
     :param name: The new record's name i.e. "Chanz Jryko"
     """
     data_to_db = [
         id,
         name,
-        binary_img,
+        face_encoding,
         course,
         year
     ]
