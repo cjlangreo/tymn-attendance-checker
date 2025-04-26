@@ -38,4 +38,5 @@ def binary_to_image(image_array) -> str:
     print(temp_image.name)
     with open(temp_image.name, 'wb') as file:
         file.write(image_array[0])
+        
     return temp_image
