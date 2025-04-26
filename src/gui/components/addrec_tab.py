@@ -173,6 +173,9 @@ def addrec_tab(main_frame):
   )
   cam_btn.place(x=0, y=550)
 
+  # Image Upload (TEST ONLY)
+  
+
   # Submit
   submit_data = tk.Button(
     addrec_frame,
