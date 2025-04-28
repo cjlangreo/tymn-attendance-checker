@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkFont
-from fakedb import conn, cursor
 from components.nav import set_nav
 from components.records_tab import records_tab
 from components.addrec_tab import addrec_tab

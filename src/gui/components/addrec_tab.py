@@ -1,9 +1,14 @@
+import os, sys
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 import tkinter.font as tkFont
-from fakedb import conn, cursor
 import subprocess
 import threading
+from fakedb import connect_db
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.append(parent_dir)
+from lib.img_manip import image_to_binary
 
 
 # Font Default
@@ -15,7 +20,43 @@ def open_cam():
     target=lambda: subprocess.run(["python3", "imong_script.py"]) # <================================================== [0<>0]
   )
 
+
 def addrec_tab(main_frame):
+
+  img_path = None
+
+  def add_student():
+    nonlocal img_path
+
+    name = name_entry.get().strip()
+    course = course_var.get().strip()
+    year = year_var.get().strip()
+
+    if not name or not course or not year:
+        print("Whoopsie! You missed a spot.")
+        return
+    
+    face_encoding = None
+    if img_path:
+      face_encoding = image_to_binary(img_path, "src/gui/img_bnw")
+
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute(
+      """
+      INSERT INTO registered_students (name, face_encodings, course, year)
+      VALUES (?, ?, ?, ?)
+    """, (name, face_encoding, course, int(year))
+    )
+    conn.commit()
+    conn.close()
+
+    name_entry.delete(0, tk.END)
+    course_var.set(0)
+    year_var.set(0)
+    img_path = None
+
+
   addrec_frame = tk.Frame(main_frame, width=900, height=800, bg=main_frame["bg"])
   addrec_frame.propagate(False)
   addrec_frame.pack(padx=40, pady=40)
@@ -131,6 +172,16 @@ def addrec_tab(main_frame):
     ).pack(side="left", padx=40)
 
   # Camera
+
+  # Image Upload (TEST ONLY)
+  def pick_img():
+    nonlocal img_path
+    img_path = filedialog.askopenfilename(
+    title="Pick image to convert",
+    initialdir="src/gui/img",
+    filetypes=[("Image Files", "*.png *.jpg *.jpeg *.bmp *.gif")]
+    )
+
   cam_btn = tk.Button(
     addrec_frame,
     text="Register Face",
@@ -142,9 +193,10 @@ def addrec_tab(main_frame):
     activebackground="#E36A00",
     highlightbackground="#d8d8d8",
     cursor="hand2",
-    command=open_cam
+    command=pick_img
   )
   cam_btn.place(x=0, y=550)
+
 
   # Submit
   submit_data = tk.Button(
@@ -157,6 +209,7 @@ def addrec_tab(main_frame):
     relief="flat",
     padx=50,
     pady=10,
-    cursor="hand2"
+    cursor="hand2",
+    command=add_student
   )
   submit_data.place(relx=0.5, y=650, anchor="center")
