@@ -25,10 +25,11 @@ def addrec_tab(main_frame):
 
   img_path = None
 
+  # Function to store values to DB 
   def add_student():
     nonlocal img_path
 
-    name = name_entry.get().strip()
+    name = f"{lname_entry.get().strip()}, {fname_entry.get().strip()} {mi_entry.get().strip()}."
     course = course_var.get().strip()
     year = year_var.get().strip()
 
@@ -51,11 +52,12 @@ def addrec_tab(main_frame):
     conn.commit()
     conn.close()
 
-    name_entry.delete(0, tk.END)
+    lname_entry.delete(0, tk.END)
+    fname_entry.delete(0, tk.END)
+    mi_entry.delete(0, tk.END)
     course_var.set(0)
     year_var.set(0)
     img_path = None
-
 
   addrec_frame = tk.Frame(main_frame, width=900, height=800, bg=main_frame["bg"])
   addrec_frame.propagate(False)
@@ -69,16 +71,15 @@ def addrec_tab(main_frame):
   radio_off = addrec_frame.radio_off
   radio_on = addrec_frame.radio_on
 
-  year_var = tk.StringVar(addrec_frame)
 
-  # Name
-  tk.Label(addrec_frame, text="Full Name", font=set_font(20, "normal"), bg="#222", fg="#d8d8d8").place(x=0, y=80)
-  tk.Label(addrec_frame, text="( Last Name,   First Name,   M.I. )", font=set_font(16, "normal"), bg="#222", fg="#5b5b5b").place(x=125, y=85)
+  # ====== CSS =========
+  style = ttk.Style()
+  style.theme_use("clam")
+  # == CSS ENDS HERE ===
 
-  entry_style = ttk.Style()
-  entry_style.theme_use("clam")
+# Name =====================================
 
-  entry_style.configure(
+  style.configure(
     "Custom.TEntry",
     relief="flat",
     foreground="#adadad",
@@ -89,31 +90,50 @@ def addrec_tab(main_frame):
     insertwidth=2,
     cursor="hand2"
   )
-  name_entry = ttk.Entry(addrec_frame, style="Custom.TEntry", font=set_font(20, "normal"))
-  name_entry.place(x=0, y=120, width=550, height=60)
 
-  # Course
+  tk.Label(addrec_frame, text="Last Name", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").place(relx=0.0, rely=0.125)
+  tk.Label(addrec_frame, text="First Name", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").place(relx=0.425, rely=0.125)
+  tk.Label(addrec_frame, text="M.I.", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").place(relx=0.85, rely=0.125)
+  
+  lname_entry = ttk.Entry(addrec_frame, style="Custom.TEntry", font=set_font(20, "normal"))
+  lname_entry.place(relx=0.0, rely=0.175, relwidth=0.4, relheight=0.075)
+
+  fname_entry = ttk.Entry(addrec_frame, style="Custom.TEntry", font=set_font(20, "normal"))
+  fname_entry.place(relx=0.425, rely=0.175, relwidth=0.4, relheight=0.075)
+
+  mi_entry = ttk.Entry(addrec_frame, style="Custom.TEntry", font=set_font(20, "normal"))
+  mi_entry.place(relx=0.85, rely=0.175, relwidth=0.075, relheight=0.075)
+
+# Name ends here ==================================
+
+# Course ============================================
+
+  # Wrapper
   course_frame = tk.Frame(addrec_frame, bg="#222", width=900, height=800)
   course_frame.place(x=0, y=210)
-  tk.Label(course_frame, text="Course", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").pack(anchor="w", pady=(0, 10))
- 
+
+  # Variable to store
   course_var = tk.StringVar(course_frame)
 
+  tk.Label(course_frame, text="Course", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").pack(anchor="w", pady=(0, 10))
+  
+
+  # Not important - only changes color to selected course
+  radio_btns = []
+  def selected_course(*args):
+    for btn in radio_btns:
+      if course_var.get() == btn["value"]:
+        btn.config(fg="#E36A00")
+      else:
+        btn.config(fg="#adadad")
+  course_var.trace_add("write", selected_course)
+
+  # OPTIONS FOR COURSES
   courses = [
     ("Computer Science", "BSCS"),
     ("Information Technology", "BSIT"),
     ("Computer Engineering", "BSCPE")
   ]
-
-  radio_btns = []
-
-  def selected_course(*args):
-    for btn in radio_btns:
-      if course_var.get() ==btn["value"]:
-        btn.config(fg="#E36A00")
-      else:
-        btn.config(fg="#adadad")
-  course_var.trace_add("write", selected_course)
 
   for label, value in courses:
     btn = tk.Radiobutton(
@@ -141,12 +161,21 @@ def addrec_tab(main_frame):
     btn.pack(anchor="w", padx=20)
     radio_btns.append(btn)
 
+# Course ends here ====================================
 
-  # Year
+# Year =================================================
+
+  # Wrapper
   year_frame = tk.Frame(addrec_frame, bg="#222", width=900, height=800)
   year_frame.place(x=0, y=420)
 
+  # Variable to store
+  year_var = tk.StringVar(year_frame)
+
+  # Label
   tk.Label(year_frame, text="Year", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").pack(anchor="w", pady=(0, 10))
+
+  # OPTIONS FOR YEARS
   for year in ["1", "2", "3", "4"]:
     tk.Radiobutton(
       year_frame,
@@ -171,7 +200,9 @@ def addrec_tab(main_frame):
       cursor="hand2"
     ).pack(side="left", padx=40)
 
-  # Camera
+# Year ends here =========================================
+
+# Face Registration =========================================
 
   # Image Upload (TEST ONLY)
   def pick_img():
@@ -182,6 +213,7 @@ def addrec_tab(main_frame):
     filetypes=[("Image Files", "*.png *.jpg *.jpeg *.bmp *.gif")]
     )
 
+  # CAMERA HERE
   cam_btn = tk.Button(
     addrec_frame,
     text="Register Face",
@@ -197,8 +229,9 @@ def addrec_tab(main_frame):
   )
   cam_btn.place(x=0, y=550)
 
+# Face registration ends here ==========================
 
-  # Submit
+# Submit ===========================================
   submit_data = tk.Button(
     addrec_frame,
     text="Submit",
