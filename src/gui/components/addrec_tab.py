@@ -15,6 +15,9 @@ from lib.img_manip import image_to_binary
 def set_font(size, weight):
   return tkFont.Font(family="Ubuntu", size=size, weight=weight)
 
+def set_font_mono(size, weight):
+  return tkFont.Font(family="Ubuntu Mono", size=size, weight=weight)
+
 def open_cam():
   threading.Thread(
     target=lambda: subprocess.run(["python3", "imong_script.py"]) # <================================================== [0<>0]
@@ -29,7 +32,27 @@ def addrec_tab(main_frame):
   def add_student():
     nonlocal img_path
 
-    name = f"{lname_entry.get().strip()}, {fname_entry.get().strip()} {mi_entry.get().strip()}."
+    lname = lname_entry.get().strip()
+    fname = fname_entry.get().strip()
+    mi = mi_entry.get().strip()
+
+    if mi and (len(mi) != 1 or not mi.isalpha()):
+      mi_label.configure(fg="red")
+      mi_entry.configure(
+        highlightbackground="red",
+        highlightcolor="red"
+      )
+      mi_entry.delete(0, tk.END)
+      print("Single letter or blank only")
+      return
+    else:
+      mi_label.configure(fg="#d8d8d8")
+      mi_entry.configure(
+        highlightbackground="#adadad",
+        highlightcolor="#e36a00"
+      )
+
+    name = f"{lname}, {fname} {mi}."
     course = course_var.get().strip()
     year = year_var.get().strip()
 
@@ -79,29 +102,45 @@ def addrec_tab(main_frame):
 
 # Name =====================================
 
-  style.configure(
-    "Custom.TEntry",
-    relief="flat",
-    foreground="#adadad",
-    fieldbackground="#222",
-    background="#222",
-    padding=10,
-    insertcolor="#E36A00",
-    insertwidth=2,
-    cursor="hand2"
-  )
-
   tk.Label(addrec_frame, text="Last Name", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").place(relx=0.0, rely=0.125)
   tk.Label(addrec_frame, text="First Name", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").place(relx=0.425, rely=0.125)
-  tk.Label(addrec_frame, text="M.I.", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").place(relx=0.85, rely=0.125)
+  mi_label = tk.Label(addrec_frame, text="M.I.", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8")
+  mi_label.place(relx=0.85, rely=0.125)
   
-  lname_entry = ttk.Entry(addrec_frame, style="Custom.TEntry", font=set_font(20, "normal"))
+  lname_entry = tk.Entry(
+    addrec_frame, 
+    font=set_font_mono(19, "normal"),
+    relief="flat",
+    bg="#222",
+    fg="#adadad",
+    highlightbackground="#adadad",
+    highlightcolor="#e36a00",
+    highlightthickness=2
+  )
   lname_entry.place(relx=0.0, rely=0.175, relwidth=0.4, relheight=0.075)
 
-  fname_entry = ttk.Entry(addrec_frame, style="Custom.TEntry", font=set_font(20, "normal"))
+  fname_entry = tk.Entry(
+    addrec_frame,  
+    font=set_font_mono(18, "normal"),
+    relief="flat",
+    bg="#222",
+    fg="#adadad",
+    highlightbackground="#adadad",
+    highlightcolor="#e36a00",
+    highlightthickness=2
+  )
   fname_entry.place(relx=0.425, rely=0.175, relwidth=0.4, relheight=0.075)
 
-  mi_entry = ttk.Entry(addrec_frame, style="Custom.TEntry", font=set_font(20, "normal"))
+  mi_entry = tk.Entry(
+    addrec_frame, 
+    font=set_font_mono(18, "normal"),
+    relief="flat",
+    bg="#222",
+    fg="#adadad",
+    highlightbackground="#adadad",
+    highlightcolor="#e36a00",
+    highlightthickness=2
+  )
   mi_entry.place(relx=0.85, rely=0.175, relwidth=0.075, relheight=0.075)
 
 # Name ends here ==================================
