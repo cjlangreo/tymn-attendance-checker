@@ -1,99 +1,115 @@
 import os, sys
 import tkinter as tk
+import customtkinter as ctk
 from tkinter import ttk, filedialog
 import tkinter.font as tkFont
-import subprocess
-import threading
-from fakedb import connect_db
+# import subprocess
+# import threading
+# from fakedb import connect_db
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
+
+from lib.db_interface import insert_into_db, Courses
 from lib.img_manip import image_to_binary
+
 
 
 # Font Default
 def set_font(size, weight):
-  return tkFont.Font(family="Ubuntu", size=size, weight=weight)
+  return ctk.CTkFont(family="Ubuntu", size=size, weight=weight)
 
 def set_font_mono(size, weight):
-  return tkFont.Font(family="Ubuntu Mono", size=size, weight=weight)
+  return ctk.CTkFont(family="Ubuntu Mono", size=size, weight=weight)
 
-def open_cam():
-  threading.Thread(
-    target=lambda: subprocess.run(["python3", "imong_script.py"]) # <================================================== [0<>0]
-  )
+# def open_cam():
+#   threading.Thread(
+#     target=lambda: subprocess.run(["python3", "imong_script.py"]) # <================================================== [0<>0]
+#   )
 
 
 def addrec_tab(main_frame):
 
   img_path = None
 
-  # Function to store values to DB 
+  """
+  Minimize below method to proceed to widgets
+  Method to save entries to database
+  """
   def add_student():
     nonlocal img_path
 
+    stid = stid_entry.get().strip()
     lname = lname_entry.get().strip()
     fname = fname_entry.get().strip()
     mi = mi_entry.get().strip()
 
     if mi and (len(mi) != 1 or not mi.isalpha()):
-      mi_label.configure(fg="red")
+      # mi_label.configure(text_color="red")
       mi_entry.configure(
-        highlightbackground="red",
-        highlightcolor="red"
+        border_color="red"
       )
-      mi_entry.delete(0, tk.END)
+      mi_entry.delete(0, "end")
       print("Single letter or blank only")
       return
     else:
-      mi_label.configure(fg="#d8d8d8")
+      # mi_label.configure(text_color="#d8d8d8")
       mi_entry.configure(
-        highlightbackground="#adadad",
-        highlightcolor="#e36a00"
+        border_color="#adadad"
       )
 
     name = f"{lname}, {fname} {mi}."
     course = course_var.get().strip()
     year = year_var.get().strip()
 
-    if not name or not course or not year:
+    image_array = None
+    if img_path:
+      image_array = image_to_binary(img_path, "src/gui/img_bnw")
+
+    if not stid or not name or not course or not year or not image_array:
         print("Whoopsie! You missed a spot.")
         return
-    
-    face_encoding = None
-    if img_path:
-      face_encoding = image_to_binary(img_path, "src/gui/img_bnw")
 
-    conn = connect_db()
-    cursor = conn.cursor()
-    cursor.execute(
-      """
-      INSERT INTO registered_students (name, face_encodings, course, year)
-      VALUES (?, ?, ?, ?)
-    """, (name, face_encoding, course, int(year))
+    insert_into_db(
+      id=stid,
+      name=name,
+      image_array=image_array,
+      course=course,
+      year=year
     )
-    conn.commit()
-    conn.close()
 
-    lname_entry.delete(0, tk.END)
-    fname_entry.delete(0, tk.END)
-    mi_entry.delete(0, tk.END)
+    lname_entry.delete(0, "end")
+    fname_entry.delete(0, "end")
+    mi_entry.delete(0, "end")
+    stid_entry.delete(0, "end")
     course_var.set(0)
     year_var.set(0)
     img_path = None
 
-  addrec_frame = tk.Frame(main_frame, width=900, height=800, bg=main_frame["bg"])
-  addrec_frame.propagate(False)
-  addrec_frame.pack(padx=40, pady=40)
+  """
+  Widgets Starts Here:
+  In order:
+  1.  addrec_frame and label: root container for this tab
+  2.  -persinf_frame and label: container for name entries
+  3.  ---name_entries and label: lname_entry, fname_entry, mi_entry
 
-  tk.Label(addrec_frame, text="Add Student Record", font=set_font(40, "bold"), bg=addrec_frame["bg"], fg="#d8d8d8").place(x=0, y=0)
+  4.  -acadinf_frame and label: container for academic info entries
+  5.  ---stud_id_entry and label: label for student id
+  6.  ---course_frame and label: container frame for course radio buttons
+  7.  ------course_btn and label: courses buttons
+  8.  ---year_frame and label: container frame for year radio buttons
+  9.  ------year_btn and label: years buttons
   
-  addrec_frame.radio_off = tk.PhotoImage(file="src/gui/assets/radio_button_unchecked.png", master=main_frame)
-  addrec_frame.radio_on = tk.PhotoImage(file="src/gui/assets/radio_button_checked.png", master=main_frame)
+  10. -fdata_frame and label: container for face registration
+  11. ---face_registration btn: button to register face data
 
-  radio_off = addrec_frame.radio_off
-  radio_on = addrec_frame.radio_on
+  12. -submit btn: button to store all valid entries to database 
 
+  addrec_frame resolution: 922x768
+  """
+  addrec_frame = ctk.CTkFrame(master=main_frame, fg_color="transparent")
+  addrec_frame.propagate(False)
+  addrec_frame.place(relwidth=1.0, relheight=1.0, x=0, y=0)
 
   # ====== CSS =========
   style = ttk.Style()
@@ -101,147 +117,145 @@ def addrec_tab(main_frame):
   # == CSS ENDS HERE ===
 
 # Name =====================================
-
-  tk.Label(addrec_frame, text="Last Name", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").place(relx=0.0, rely=0.125)
-  tk.Label(addrec_frame, text="First Name", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").place(relx=0.425, rely=0.125)
-  mi_label = tk.Label(addrec_frame, text="M.I.", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8")
-  mi_label.place(relx=0.85, rely=0.125)
   
-  lname_entry = tk.Entry(
-    addrec_frame, 
+  # Wrapper
+  # 414x230
+  persinf_frame = ctk.CTkFrame(master=addrec_frame, fg_color="#2a2a2a", corner_radius=16)
+  persinf_frame.place(relx=0.055, rely=0.065, relheight=0.3, relwidth=0.45, anchor="nw")
+  persinf_frame.propagate(False)
+
+  ctk.CTkLabel(master=persinf_frame, text="Personal Information", font=set_font(32, "bold"), text_color="#d8d8d8").place(relx=0.05, rely=0.085)
+
+  # ctk.CTkLabel(master=persinf_frame, text="Last Name", font=set_font(20, "bold"), fg_color="#222", text_color="#d8d8d8").place(relx=0.0, rely=0.125)
+  # ctk.CTkLabel(master=persinf_frame, text="First Name", font=set_font(20, "bold"), fg_color="#222", text_color="#d8d8d8").place(relx=0.425, rely=0.125)
+  # mi_label = ctk.CTkLabel(master=persinf_frame, text="M.I.", font=set_font(20, "bold"), fg_color="#222", text_color="#d8d8d8")
+  # mi_label.place(relx=0.85, rely=0.125)
+  
+  fname_entry = ctk.CTkEntry(
+    master=persinf_frame,  
+    font=set_font_mono(18, "normal"),
+    placeholder_text="First Name",
+    fg_color="#3b3b3b",
+    text_color="#adadad",
+    corner_radius=10,
+    border_width=0
+  )
+  fname_entry.place(relx=0.075, rely=0.325, relwidth=0.5, relheight=0.25)
+
+  mi_entry = ctk.CTkEntry(
+    master=persinf_frame, 
+    font=set_font_mono(18, "normal"),
+    placeholder_text="M.I.",
+    fg_color="#3b3b3b",
+    text_color="#adadad",
+    corner_radius=10,
+    border_width=0
+  )
+  mi_entry.place(relx=0.625, rely=0.325, relwidth=0.2, relheight=0.25)
+
+  lname_entry = ctk.CTkEntry(
+    master=persinf_frame, 
     font=set_font_mono(19, "normal"),
-    relief="flat",
-    bg="#222",
-    fg="#adadad",
-    highlightbackground="#adadad",
-    highlightcolor="#e36a00",
-    highlightthickness=2
+    placeholder_text="Last Name",
+    fg_color="#3b3b3b",
+    text_color="#adadad",
+    corner_radius=10,
+    border_width=0
   )
-  lname_entry.place(relx=0.0, rely=0.175, relwidth=0.4, relheight=0.075)
+  lname_entry.place(relx=0.075, rely=0.65, relwidth=0.75, relheight=0.25)
 
-  fname_entry = tk.Entry(
-    addrec_frame,  
-    font=set_font_mono(18, "normal"),
-    relief="flat",
-    bg="#222",
-    fg="#adadad",
-    highlightbackground="#adadad",
-    highlightcolor="#e36a00",
-    highlightthickness=2
+# Student ID ==============================
+
+  # Wrapper
+  # 825x365
+  studinf_frame = ctk.CTkFrame(master=addrec_frame, fg_color="#2a2a2a", corner_radius=16)
+  studinf_frame.place(relx=0.055, rely=0.39, relheight=0.475, relwidth=0.895)
+  studinf_frame.propagate(False)
+
+  ctk.CTkLabel(master=studinf_frame, text="Academic Information", font=set_font(36, "bold"), text_color="#d8d8d8").place(relx=0.025, rely=0.055)
+
+
+  ctk.CTkLabel(master=studinf_frame, text="Student ID:", font=set_font(20, "bold"), fg_color="transparent", text_color="#d8d8d8").place(relx=0.035, rely=0.2125)
+  stid_entry = ctk.CTkEntry(
+    master=studinf_frame, 
+    font=set_font_mono(19, "normal"),
+    placeholder_text="####",
+    fg_color="#3b3b3b",
+    text_color="#adadad",
+    border_width=0
   )
-  fname_entry.place(relx=0.425, rely=0.175, relwidth=0.4, relheight=0.075)
-
-  mi_entry = tk.Entry(
-    addrec_frame, 
-    font=set_font_mono(18, "normal"),
-    relief="flat",
-    bg="#222",
-    fg="#adadad",
-    highlightbackground="#adadad",
-    highlightcolor="#e36a00",
-    highlightthickness=2
-  )
-  mi_entry.place(relx=0.85, rely=0.175, relwidth=0.075, relheight=0.075)
-
-# Name ends here ==================================
+  stid_entry.place(relx=0.175, rely=0.2, relwidth=0.1, relheight=0.1)
 
 # Course ============================================
 
   # Wrapper
-  course_frame = tk.Frame(addrec_frame, bg="#222", width=900, height=800)
-  course_frame.place(x=0, y=210)
+  course_frame = ctk.CTkFrame(master=studinf_frame, fg_color="transparent")
+  course_frame.place(relx=0.035, rely=0.35, relheight=0.4, relwidth=0.8 )
+  course_frame.propagate(False)
+
+  button_grid = ctk.CTkFrame(master=course_frame, fg_color="transparent")
+  button_grid.place(relx=0.5, rely=0.2, relheight=0.7, relwidth=0.95, anchor="n")
 
   # Variable to store
-  course_var = tk.StringVar(course_frame)
+  course_var = tk.StringVar(master=button_grid)
 
-  tk.Label(course_frame, text="Course", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").pack(anchor="w", pady=(0, 10))
-  
-
-  # Not important - only changes color to selected course
-  radio_btns = []
-  def selected_course(*args):
-    for btn in radio_btns:
-      if course_var.get() == btn["value"]:
-        btn.config(fg="#E36A00")
-      else:
-        btn.config(fg="#adadad")
-  course_var.trace_add("write", selected_course)
+  ctk.CTkLabel(master=course_frame, text="Course", font=set_font(20, "bold"), fg_color="transparent", text_color="#d8d8d8").pack(anchor="w")
 
   # OPTIONS FOR COURSES
-  courses = [
-    ("Computer Science", "BSCS"),
-    ("Information Technology", "BSIT"),
-    ("Computer Engineering", "BSCPE")
-  ]
+  courses = [ Courses.BSA, Courses.BSBA, Courses.BSCE, Courses.BSCS, Courses.BSEE, Courses.BSHM, Courses.BSIT, Courses.BSME, Courses.BSOA ]
 
-  for label, value in courses:
-    btn = tk.Radiobutton(
-      course_frame,
-      text=label,
-      image=radio_off,
-      selectimage=radio_on,
+  for index, course in enumerate(courses):
+    row = index // 3
+    col = index % 3
+
+    btn = ctk.CTkRadioButton(
+      master=button_grid,
+      text=course,
       variable=course_var,
-      value=value,
+      value=course,
       font=set_font(20, "normal"),
-      fg="#adadad",
-      bg="#222",
-      activeforeground="#faa152",
-      activebackground="#222",
-      selectcolor="#222",
-      padx=30,
-      pady=10,
-      bd=0,
-      highlightthickness=0,
-      indicatoron=False,
-      justify="left",
-      compound="left",
+      text_color="#adadad",
+      hover_color="orange",
       cursor="hand2"
     )
-    btn.pack(anchor="w", padx=20)
-    radio_btns.append(btn)
-
-# Course ends here ====================================
+    btn.grid(row=row, column=col, padx=[0, 120], pady=5)
 
 # Year =================================================
 
   # Wrapper
-  year_frame = tk.Frame(addrec_frame, bg="#222", width=900, height=800)
-  year_frame.place(x=0, y=420)
+  year_frame = ctk.CTkFrame(master=studinf_frame, fg_color="transparent")
+  year_frame.place(relx=0.035, rely=0.75, relheight=0.2, relwidth=0.8)
 
   # Variable to store
-  year_var = tk.StringVar(year_frame)
+  year_var = tk.StringVar(master=year_frame)
 
   # Label
-  tk.Label(year_frame, text="Year", font=set_font(20, "bold"), bg="#222", fg="#d8d8d8").pack(anchor="w", pady=(0, 10))
+  ctk.CTkLabel(master=year_frame, text="Year", font=set_font(20, "bold"), fg_color="transparent", text_color="#d8d8d8").pack(anchor="w")
 
   # OPTIONS FOR YEARS
   for year in ["1", "2", "3", "4"]:
-    tk.Radiobutton(
-      year_frame,
+    ctk.CTkRadioButton(
+      master=year_frame,
       text=year,
       variable=year_var,
       value=year,
-      image=radio_off,
-      selectimage=radio_on,
       font=set_font(20, "normal"),
-      fg="#adadad",
-      bg="#222",
-      activeforeground="#faa152",
-      activebackground="#222",
-      selectcolor="#222",
-      padx=10,
-      pady=10,
-      bd=0,
-      highlightthickness=0,
-      indicatoron=False,
-      justify="left",
-      compound="left",
+      text_color="#adadad",
+      fg_color="#222",
+      hover_color="orange",
       cursor="hand2"
-    ).pack(side="left", padx=40)
-
-# Year ends here =========================================
+    ).pack(side="left", padx=[20, 0])
 
 # Face Registration =========================================
+
+  # Wrapper
+  # 392x230
+  facedata_frame = ctk.CTkFrame(master=addrec_frame, fg_color="#2a2a2a", corner_radius=16)
+  facedata_frame.place(relx=0.95, rely=0.065, relheight=0.3, relwidth=0.425, anchor="ne")
+  facedata_frame.propagate(False)
+
+  ctk.CTkLabel(master=facedata_frame, text="Facial Data", font=set_font(32, "bold"), text_color="#d8d8d8").place(relx=0.05, rely=0.085)
+
 
   # Image Upload (TEST ONLY)
   def pick_img():
@@ -253,35 +267,30 @@ def addrec_tab(main_frame):
     )
 
   # CAMERA HERE
-  cam_btn = tk.Button(
-    addrec_frame,
+  cam_btn = ctk.CTkButton(
+    master=facedata_frame,
     text="Register Face",
-    font=set_font(20, "bold"),
-    bd=0,
-    background="#222",
-    foreground="#d8d8d8",
-    activeforeground="#d8d8d8",
-    activebackground="#E36A00",
-    highlightbackground="#d8d8d8",
-    cursor="hand2",
+    font=set_font(28, "bold"),
+    border_width=2,
+    corner_radius=12,
+    fg_color="transparent",
+    border_color="#474747",
     command=pick_img
   )
-  cam_btn.place(x=0, y=550)
-
-# Face registration ends here ==========================
+  cam_btn.place(relx=0.5, rely=0.65, relwidth=0.8, relheight=0.35, anchor="c")
 
 # Submit ===========================================
-  submit_data = tk.Button(
-    addrec_frame,
+
+  submit_data = ctk.CTkButton(
+    master=addrec_frame,
     text="Submit",
-    font=set_font(16, "bold"),
-    background="#E36A00",
-    foreground="#d8d8d8",
-    highlightthickness=0,
-    relief="flat",
-    padx=50,
-    pady=10,
+    font=set_font(20, "bold"),
+    fg_color="#E36A00",
+    text_color="#d8d8d8",
+    border_width=0,
     cursor="hand2",
+    height=50,
+    corner_radius=25,
     command=add_student
   )
-  submit_data.place(relx=0.5, y=650, anchor="center")
+  submit_data.place(relx=0.5, rely=0.925, anchor="center")
