@@ -6,7 +6,6 @@ import time
 from PIL import ImageTk, Image, ImageDraw, ImageFont
 from lib import main_recognition
 from lib import db_interface
-from playsound import playsound
 
 def retrieve_db_data():
     records = db_interface.pull_from_db()
@@ -84,7 +83,6 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
 
             if (start_time + 3) - time.time() < 0:
                 image_draw_frame.rectangle([left, top, right, bottom], width=10, outline='red') # The bounding square
-                playsound('src/lib/success_beep.mp3')
                 master_window.destroy()
                 
 
