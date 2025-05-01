@@ -32,7 +32,7 @@ def update_label_image(dest_label : tkinter.Label, src_image):
     dest_label.image = tk_image
 
 
-def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.Toplevel, mode : str | None = None):
+def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.Toplevel, mode : str):
     """
 
     Args:
@@ -73,20 +73,24 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
 
             box_outline_color = 'white'
 
-            if face_encodings:
-                if prev_name == name:
-                    print('Face recognized')
-                    print(f'Time remaining: {time_left - time.time()}')
-            else:
-                start_time = time.time()
-                time_left = start_time + 3
+            match mode:
+                case 'register':
+                    if face_encodings:
+                        if prev_name == name == 'Unknown':
+                            print('Face recognized')
+                            print(f'Time remaining: {time_left - time.time()}')
+                    else:
+                        start_time = time.time()
+                        time_left = start_time + 3
+
+
+
+
 
             if (start_time + 3) - time.time() < 0:
                 image_draw_frame.rectangle([left, top, right, bottom], width=10, outline='red') # The bounding square
                 master_window.destroy()
                 
-
-        
             prev_name = name
             
             for (top, right, bottom, left), name in zip(face_locations, face_names):
@@ -114,7 +118,6 @@ def open_register_window(master):
     
     face_recog_thread = threading.Thread(target=start_face_recognition, args=(image_label, recog_window,))
     face_recog_thread.start()
-    recog_window.wait_window()
 
 class MainWindow:
     def __init__(self, master : tkinter.Tk):
