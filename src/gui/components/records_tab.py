@@ -117,6 +117,7 @@ def records_tab(main_frame):
       tree.delete(row)
     
     rows = pull_from_db()
+    print(rows)
     for row in rows:
       tree.insert("", "end", values=row)
 

@@ -3,8 +3,18 @@ import tkinter as tk
 import customtkinter as ctk
 from tkinter import ttk, filedialog
 import tkinter.font as tkFont
+
+from lib import main_recognition
+from lib import db_interface
+from lib import img_manip
+from PIL import ImageTk, Image, ImageDraw, ImageFont
+import face_recognition
+import time
+import numpy as np
+import threading
+
+
 # import subprocess
-# import threading
 # from fakedb import connect_db
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -22,10 +32,115 @@ def set_font(size, weight):
 def set_font_mono(size, weight):
   return ctk.CTkFont(family="Ubuntu Mono", size=size, weight=weight)
 
-# def open_cam():
-#   threading.Thread(
-#     target=lambda: subprocess.run(["python3", "imong_script.py"]) # <================================================== [0<>0]
-#   )
+def update_label_image(dest_label : tk.Label, src_image):
+    tk_image = ImageTk.PhotoImage(src_image)
+    dest_label.configure(image=tk_image)
+    dest_label.image = tk_image
+    
+
+def retrieve_db_data():
+    records = db_interface.pull_from_db()
+
+    known_face_ids = []
+    known_face_names = []
+    known_face_encodings = []
+    known_face_courses = []
+    known_face_years = []
+    known_records = [known_face_ids, known_face_names, known_face_encodings, known_face_courses, known_face_years]
+
+    # We take the records list of type list[tuple] returned from db_interface.pull_from_db() and supply the known_records' lists with those records.
+    for record in records:
+        # record = (id, name, face_encodings, course, year)
+        for known_record, column in zip(known_records, record):
+            known_record.append(column)
+
+    return known_records
+
+
+ # Facial Recognition
+def start_face_recognition(dest_label : tk.Label, master_window : tk.Toplevel, mode : str):
+    """
+
+    Args:
+        dest_label:
+        mode: hello
+    """
+    known_records = retrieve_db_data()
+    process_this_frame : bool = True
+    prev_name = ''
+    start_time = time.time()
+    time_left = start_time + 3
+
+    while True:
+        if process_this_frame:
+            frame_data = main_recognition.retrieve_frame_data() # (frame, face_encodings, face_locations)
+            
+            frame = frame_data[0]
+            face_encodings = frame_data[1]
+            face_locations = frame_data[2]
+
+            frame_image : Image = Image.fromarray(frame)
+            image_draw_frame = ImageDraw.ImageDraw(frame_image)
+            
+            face_names = []
+            name = "Unknown"
+            
+            # Match the names
+            if len(known_records[2]) > 0 and len(face_encodings) > 0: # Because compare_faces breaks when face_encodings is empty.
+                matches : list[any] = face_recognition.compare_faces(known_records[2], face_encodings[0])
+                print(matches)
+                face_distances = face_recognition.face_distance(known_records[2], face_encodings[0])
+                best_match_index = np.argmin(face_distances) # find the smallest value of 'face_distances' by index
+        
+                if matches[best_match_index]:
+                    name = known_records[1][best_match_index]
+
+            face_names.append(name)
+
+            box_outline_color = 'white'
+
+            match mode:
+                case 'register':
+                    if face_encodings:
+                        if prev_name == name == 'Unknown':
+                            print('Face recognized')
+                            print(f'Time remaining: {time_left - time.time()}')
+                    else:
+                        start_time = time.time()
+                        time_left = start_time + 3
+
+            if (start_time + 3) - time.time() < 0:
+                image_draw_frame.rectangle([left, top, right, bottom], width=10, outline='red') # The bounding square
+                print(img_manip.image_to_binary(frame_image, "src/gui/img_bnw"))
+                master_window.destroy()
+                
+            prev_name = name
+            
+            for (top, right, bottom, left), name in zip(face_locations, face_names):
+                top *= 4
+                left *= 4
+                right *= 4
+                bottom *= 4
+        
+                text_to_draw = f"Name: {name}\nID: {top}"
+        
+                image_draw_frame.rectangle([left, top, right, bottom], width=10, outline=box_outline_color) # The bounding square
+                image_font = ImageFont.truetype('src/lib/Lexend.ttf', size=15)
+                image_draw_frame.multiline_text([left, bottom, right, bottom + 50], text=text_to_draw, font=image_font)
+            
+        process_this_frame = not process_this_frame
+        update_label_image(dest_label, frame_image)
+
+
+def open_register_window(master):
+    recog_window = tk.Toplevel(master)
+    recog_window.title('Register New Student')
+    
+    image_label = tk.Label(recog_window)
+    image_label.pack()
+    
+    face_recog_thread = threading.Thread(target=start_face_recognition, args=(image_label, recog_window, 'register'))
+    face_recog_thread.start()
 
 
 def addrec_tab(main_frame):
@@ -260,16 +375,6 @@ def addrec_tab(main_frame):
   #   filetypes=[("Image Files", "*.png *.jpg *.jpeg *.bmp *.gif")]
   #   )
 
-  # Register New Face
-  def register_face():
-    face_reg_top = ctk.CTkToplevel()
-    face_reg_top.title("Register New Face")
-    face_reg_top("768x980")
-    face_reg_top.grab_set()
-    face_reg_top.resizable(False, False)
-    ctk.CTkButton(master=face_reg_top, text="Close", command=face_reg_top.destroy).place(relx=0.5, rely=0.5, anchor="c")
-    
-
   # CAMERA HERE
   cam_btn = ctk.CTkButton(
     master=facedata_frame,
@@ -279,7 +384,7 @@ def addrec_tab(main_frame):
     corner_radius=12,
     fg_color="transparent",
     border_color="#474747",
-    command=register_face
+    command=lambda: open_register_window(facedata_frame)
   )
   cam_btn.place(relx=0.5, rely=0.65, relwidth=0.8, relheight=0.35, anchor="c")
 
