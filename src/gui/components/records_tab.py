@@ -14,14 +14,14 @@ def set_font(size, weight):
   return ctk.CTkFont(family="Ubuntu", size=size, weight=weight)
 
 def records_tab(main_frame):
-  records_frame = ctk.CTkFrame(master=main_frame, width=900, height=800, fg_color=main_frame.cget("fg_color"))
+  records_frame = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"))
   records_frame.propagate(False)
-  records_frame.pack()
+  records_frame.place(relx=0.5, rely=0.5, relwidth=0.9, relheight=0.9, anchor="c")
 
   # Table Frame (tree + scrollbar)
   table_frame = ctk.CTkFrame(
     master=records_frame, 
-    fg_color="#2a2a2a",
+    fg_color="#1a1a1a",
     corner_radius=16,
   )
   table_frame.place(relx=0.5, rely=0.5, relwidth=0.95, relheight=0.92, anchor="c")
@@ -36,7 +36,7 @@ def records_tab(main_frame):
     tree.column("Course", width=int(tree_width * 0.15))
     tree.column("Year", width=int(tree_width * 0.15))
 
-  tree = ttk.Treeview(table_frame, columns=("ID", "Name", "Image", "Course", "Year"), height=50, show="headings")
+  tree = ttk.Treeview(table_frame, columns=("ID", "Name", "Image", "Course", "Year"), show="headings")
   tree.heading("ID", text="ID")
   tree.heading("Name", text="Name", anchor="w")
   tree.heading("Course", text="Course", anchor="w")
@@ -60,8 +60,8 @@ def records_tab(main_frame):
     foreground="#adadad",
     fieldbackground="transparent",
     font=("Ubuntu Mono", 14, "normal"),
+    rowheight=50,
     borderwidth=0,
-    # rowheight=50,
   )
   
   style.map(
@@ -108,7 +108,6 @@ def records_tab(main_frame):
     expand=True,
     fill="y",
     pady=20,
-    padx=20
   )
   scrollbar.place(relx=0.96, rely=0.064, relheight=0.9075)
 

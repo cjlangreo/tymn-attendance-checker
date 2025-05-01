@@ -160,16 +160,16 @@ def addrec_tab(main_frame):
     mi = mi_entry.get().strip()
 
     if mi and (len(mi) != 1 or not mi.isalpha()):
-      # mi_label.configure(text_color="red")
       mi_entry.configure(
+        border_width=2,
         border_color="red"
       )
       mi_entry.delete(0, "end")
       print("Single letter or blank only")
       return
     else:
-      # mi_label.configure(text_color="#d8d8d8")
       mi_entry.configure(
+        border_width=0,
         border_color="#adadad"
       )
 
@@ -240,11 +240,6 @@ def addrec_tab(main_frame):
   persinf_frame.propagate(False)
 
   ctk.CTkLabel(master=persinf_frame, text="Personal Information", font=set_font(32, "bold"), text_color="#d8d8d8").place(relx=0.05, rely=0.085)
-
-  # ctk.CTkLabel(master=persinf_frame, text="Last Name", font=set_font(20, "bold"), fg_color="#222", text_color="#d8d8d8").place(relx=0.0, rely=0.125)
-  # ctk.CTkLabel(master=persinf_frame, text="First Name", font=set_font(20, "bold"), fg_color="#222", text_color="#d8d8d8").place(relx=0.425, rely=0.125)
-  # mi_label = ctk.CTkLabel(master=persinf_frame, text="M.I.", font=set_font(20, "bold"), fg_color="#222", text_color="#d8d8d8")
-  # mi_label.place(relx=0.85, rely=0.125)
   
   fname_entry = ctk.CTkEntry(
     master=persinf_frame,  
@@ -356,7 +351,6 @@ def addrec_tab(main_frame):
       value=year,
       font=set_font(20, "normal"),
       text_color="#adadad",
-      fg_color="#222",
       hover_color="orange",
       cursor="hand2"
     ).pack(side="left", padx=[20, 0])
