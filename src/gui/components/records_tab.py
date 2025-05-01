@@ -1,8 +1,6 @@
 import os, sys
 import customtkinter as ctk
 from tkinter import ttk
-import tkinter.font as tkFont
-# from fakedb import connect_db
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
@@ -14,14 +12,14 @@ def set_font(size, weight):
   return ctk.CTkFont(family="Ubuntu", size=size, weight=weight)
 
 def records_tab(main_frame):
-  records_frame = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"))
-  records_frame.propagate(False)
-  records_frame.place(relx=0.5, rely=0.5, relwidth=0.9, relheight=0.9, anchor="c")
+  main = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"))
+  main.propagate(False)
+  main.place(relx=0.5, rely=0.5, relwidth=0.9, relheight=0.9, anchor="c")
 
   # Table Frame (tree + scrollbar)
   table_frame = ctk.CTkFrame(
-    master=records_frame, 
-    fg_color="#1a1a1a",
+    master=main, 
+    fg_color="#2a2a2a",
     corner_radius=16,
   )
   table_frame.place(relx=0.5, rely=0.5, relwidth=0.95, relheight=0.92, anchor="c")
@@ -31,7 +29,7 @@ def records_tab(main_frame):
     tree_width = tree.winfo_width()
 
     tree.column("ID", width=int(tree_width * 0.1), anchor="center")
-    tree.column("Name", width=int(tree_width * 0.4))
+    tree.column("Name", width=int(tree_width * 0.35))
     tree.column("Image", width=int(tree_width * 0.2))
     tree.column("Course", width=int(tree_width * 0.15))
     tree.column("Year", width=int(tree_width * 0.15))
@@ -39,9 +37,9 @@ def records_tab(main_frame):
   tree = ttk.Treeview(table_frame, columns=("ID", "Name", "Image", "Course", "Year"), show="headings")
   tree.heading("ID", text="ID")
   tree.heading("Name", text="Name", anchor="w")
+  tree.heading("Image", text="Image", anchor="w")
   tree.heading("Course", text="Course", anchor="w")
   tree.heading("Year", text="Year", anchor="w")
-  tree.heading("Image", text="Image", anchor="w")
 
   tree.bind("<Configure>", relative_width)
 
@@ -56,7 +54,7 @@ def records_tab(main_frame):
   # Tree Rows and Columns Styling
   style.configure(
     "Treeview",
-    background="#1a1a1a",
+    background="#2a2a2a",
     foreground="#adadad",
     fieldbackground="transparent",
     font=("Ubuntu Mono", 14, "normal"),
@@ -77,7 +75,7 @@ def records_tab(main_frame):
     relief="flat",
     borderwidth=0,
     height=50,
-    background="#3b3b3b",
+    background="#1a1a1a",
     foreground="#d8d8d8"
   )
 
@@ -91,7 +89,7 @@ def records_tab(main_frame):
   style.configure(
     "Vertical.TScrollbar",
     relief="flat",
-    background="#222",
+    background="#3b3b3b",
     arrowcolor=table_frame["bg"],
     borderwidth=0,
     troughcolor=table_frame["bg"]
@@ -99,7 +97,7 @@ def records_tab(main_frame):
 
   style.map(
     "Vertical.TScrollbar",
-    background=[("active", "#E36A00"), ("!active", "#222")]
+    background=[("active", "#E36A00"), ("!active", "#3b3b3b")]
   )
 
   # Pack scrollbar and tree
@@ -109,7 +107,7 @@ def records_tab(main_frame):
     fill="y",
     pady=20,
   )
-  scrollbar.place(relx=0.96, rely=0.064, relheight=0.9075)
+  scrollbar.place(relx=0.9585, rely=0.075, relheight=0.875)
 
   # Display Database
   def show_records():
@@ -117,7 +115,7 @@ def records_tab(main_frame):
       tree.delete(row)
     
     rows = pull_from_db()
-    print(rows)
+    # print(rows)
     for row in rows:
       tree.insert("", "end", values=row)
 

@@ -4,7 +4,7 @@ import customtkinter as ctk
 def set_font(size, weight):
   return ctk.CTkFont(family="Ubuntu", size=size, weight=weight)
 
-def set_nav(nav_frame, main_frame, records_tab, addrec_tab):
+def set_nav(nav_frame, main_frame, attendance_tab, records_tab, addrec_tab):
 
   # Active Tab
   def active(bar, tab):
@@ -17,14 +17,29 @@ def set_nav(nav_frame, main_frame, records_tab, addrec_tab):
 
   # Hide Bar
   def hide_bar():
-    records_bar.configure(fg_color="#1a1a1a")
-    addrec_bar.configure(fg_color="#1a1a1a")
+    attendance_bar.configure(fg_color="transparent")
+    records_bar.configure(fg_color="transparent")
+    addrec_bar.configure(fg_color="transparent")
 
   def del_tabs():
     for tab in main_frame.winfo_children():
       tab.destroy()
   
   # Nav Buttons
+  attendance_btn = ctk.CTkButton(
+    master=nav_frame, 
+    text="Attendance Sheet", 
+    font=set_font(16, "bold"),
+    text_color="#d8d8d8", 
+    fg_color="transparent",
+    hover_color="#1a1a1a",
+    border_width=0,
+    height=50,
+    anchor="w",
+    command=lambda: active(attendance_bar, attendance_tab)
+  )
+  attendance_btn.place(x=30, y=50, relwidth=1.0)
+
   records_btn = ctk.CTkButton(
     master=nav_frame, 
     text="Student Records", 
@@ -32,11 +47,12 @@ def set_nav(nav_frame, main_frame, records_tab, addrec_tab):
     height=50,
     text_color="#d8d8d8", 
     fg_color="transparent",
+    hover_color="#1a1a1a",
     border_width=0,
     anchor="w",
     command=lambda: active(records_bar, records_tab)
   )
-  records_btn.place(x=10, y=100, relwidth=1.0)
+  records_btn.place(x=30, y=100, relwidth=1.0)
 
   addrecds_btn = ctk.CTkButton(
     master=nav_frame, 
@@ -44,15 +60,19 @@ def set_nav(nav_frame, main_frame, records_tab, addrec_tab):
     font=set_font(16, "bold"),
     text_color="#d8d8d8", 
     fg_color="transparent",
+    hover_color="#1a1a1a",
     border_width=0,
     height=50,
     anchor="w",
     command=lambda: active(addrec_bar, addrec_tab)
   )
-  addrecds_btn.place(x=10, y=150, relwidth=1.0)
+  addrecds_btn.place(x=30, y=150, relwidth=1.0)
 
   # Active Button Bar
-  global records_bar, addrec_bar
+  global attendance_bar, records_bar, addrec_bar
+
+  attendance_bar = ctk.CTkLabel(master=nav_frame, text="", fg_color="#1a1a1a", width=10, height=50)
+  attendance_bar.place(x=2, y=50)
 
   records_bar = ctk.CTkLabel(master=nav_frame, text="", fg_color="#1a1a1a", width=10, height=50)
   records_bar.place(x=2, y=100, )
@@ -60,4 +80,4 @@ def set_nav(nav_frame, main_frame, records_tab, addrec_tab):
   addrec_bar = ctk.CTkLabel(master=nav_frame, text="", fg_color="#1a1a1a", width=10, height=50)
   addrec_bar.place(x=2, y=150)
 
-  return active, records_bar
+  return active, attendance_bar

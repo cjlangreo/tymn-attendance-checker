@@ -204,7 +204,7 @@ def addrec_tab(main_frame):
   """
   Widgets Starts Here:
   In order:
-  1.  addrec_frame and label: root container for this tab
+  1.  main and label: root container for this tab
   2.  -persinf_frame and label: container for name entries
   3.  ---name_entries and label: lname_entry, fname_entry, mi_entry
 
@@ -220,11 +220,11 @@ def addrec_tab(main_frame):
 
   12. -submit btn: button to store all valid entries to database 
 
-  addrec_frame resolution: 922x768
+  main resolution: 922x768
   """
-  addrec_frame = ctk.CTkFrame(master=main_frame, fg_color="transparent")
-  addrec_frame.propagate(False)
-  addrec_frame.place(relwidth=1.0, relheight=1.0, x=0, y=0)
+  main = ctk.CTkFrame(master=main_frame, fg_color="transparent")
+  main.propagate(False)
+  main.place(relwidth=1.0, relheight=1.0, x=0, y=0)
 
   # ====== CSS =========
   style = ttk.Style()
@@ -235,7 +235,7 @@ def addrec_tab(main_frame):
   
   # Wrapper
   # 414x230
-  persinf_frame = ctk.CTkFrame(master=addrec_frame, fg_color="#2a2a2a", corner_radius=16)
+  persinf_frame = ctk.CTkFrame(master=main, fg_color="#2a2a2a", corner_radius=16)
   persinf_frame.place(relx=0.055, rely=0.065, relheight=0.3, relwidth=0.45, anchor="nw")
   persinf_frame.propagate(False)
 
@@ -278,7 +278,7 @@ def addrec_tab(main_frame):
 
   # Wrapper
   # 825x365
-  studinf_frame = ctk.CTkFrame(master=addrec_frame, fg_color="#2a2a2a", corner_radius=16)
+  studinf_frame = ctk.CTkFrame(master=main, fg_color="#2a2a2a", corner_radius=16)
   studinf_frame.place(relx=0.055, rely=0.39, relheight=0.475, relwidth=0.895)
   studinf_frame.propagate(False)
 
@@ -359,21 +359,11 @@ def addrec_tab(main_frame):
 
   # Wrapper
   # 392x230
-  facedata_frame = ctk.CTkFrame(master=addrec_frame, fg_color="#2a2a2a", corner_radius=16)
+  facedata_frame = ctk.CTkFrame(master=main, fg_color="#2a2a2a", corner_radius=16)
   facedata_frame.place(relx=0.95, rely=0.065, relheight=0.3, relwidth=0.425, anchor="ne")
   facedata_frame.propagate(False)
 
   ctk.CTkLabel(master=facedata_frame, text="Facial Data", font=set_font(32, "bold"), text_color="#d8d8d8").place(relx=0.05, rely=0.085)
-
-
-  # Image Upload (TEST ONLY)
-  # def pick_img():
-  #   nonlocal img_path
-  #   img_path = filedialog.askopenfilename(
-  #   title="Pick image to convert",
-  #   initialdir="src/gui/img",
-  #   filetypes=[("Image Files", "*.png *.jpg *.jpeg *.bmp *.gif")]
-  #   )
 
   # CAMERA HERE
   cam_btn = ctk.CTkButton(
@@ -391,7 +381,7 @@ def addrec_tab(main_frame):
 # Submit ===========================================
 
   submit_data = ctk.CTkButton(
-    master=addrec_frame,
+    master=main,
     text="Submit",
     font=set_font(20, "bold"),
     fg_color="#E36A00",
