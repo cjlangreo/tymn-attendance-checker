@@ -100,7 +100,7 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
                 text_to_draw = f"Name: {name}\nID: {top}"
         
                 image_draw_frame.rectangle([left, top, right, bottom], width=10, outline=box_outline_color) # The bounding square
-                image_font = ImageFont.truetype('Lexend.ttf', size=15)
+                image_font = ImageFont.truetype('src/lib/Lexend.ttf', size=15)
                 image_draw_frame.multiline_text([left, bottom, right, bottom + 50], text=text_to_draw, font=image_font)
             
         process_this_frame = not process_this_frame
