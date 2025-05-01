@@ -6,7 +6,7 @@ from components.addrec_tab import addrec_tab
 # Create a window
 window = ctk.CTk()
 window.title("Apprizz")
-window.geometry("1152x768")
+window.geometry("1366x768")
 window.configure(background="#222222")
 window.resizable(False, False)
 
