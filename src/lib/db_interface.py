@@ -85,7 +85,7 @@ def pull_from_db(values : tuple[ColumnFilters] | None = '*', filter : tuple[Colu
 
     Args:
         values (tuple[ColumnFilters]): A tuple[ColumnFilters] to select what columns to query.
-        filter (tuple[ColumnFilters, Courses]): A tuple[ColumnFilters, any] to filter the query by column with a value.
+        filter (tuple[ColumnFilters, any]): A tuple[ColumnFilters, any] to filter the query by column with a value.
 
     Returns:
         list[tuple]: A list containing all the records from the query.
