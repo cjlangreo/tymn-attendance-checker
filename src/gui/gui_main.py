@@ -3,6 +3,14 @@ from components.nav import set_nav
 from components.records_tab import records_tab
 from components.addrec_tab import addrec_tab
 from components.attendance import attendance_tab
+from lib.img_manip import create_temp_folder, bytes_to_image
+from lib.db_interface import pull_from_db, ColumnFilters
+
+# Create the temp folder and load all images
+create_temp_folder()
+records = pull_from_db(values=(ColumnFilters.ID, ColumnFilters.IMAGE_ARRAY))
+for record in records:
+    bytes_to_image(record[1], record[0])
 
 # Create a window
 window = ctk.CTk()
