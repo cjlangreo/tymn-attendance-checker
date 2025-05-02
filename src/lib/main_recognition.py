@@ -1,7 +1,7 @@
 import face_recognition
 import cv2
 
-video_capture = cv2.VideoCapture(0)
+video_capture = cv2.VideoCapture(2)
 
 def retrieve_frame_data() -> tuple:
     frame = video_capture.read()[1]
