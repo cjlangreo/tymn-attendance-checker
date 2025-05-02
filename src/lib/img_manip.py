@@ -2,41 +2,60 @@
 A utility module.
 """
 from PIL import Image
-from _io import BufferedReader
 import tempfile
-from uuid import uuid4
+from os import mkdir
+from shutil import rmtree
+import time
+
+TEMP_IMAGE_PATH = '/tmp/face_recognition/'
 
 
-def image_to_binary(img_path : str, temp_folder_path : str) -> BufferedReader:
+def delete_temp_folder():
     """
-    Takes an image and converts it into a binary array.
+    Deletes the temporary folder.
+    """
+    try:
+        rmtree(TEMP_IMAGE_PATH)
+    except Exception as e:
+        print(e)
+        
+        
+def create_temp_folder():
+    """
+    Creates a temporary folder to store images.
+    """
+    try:
+        mkdir(TEMP_IMAGE_PATH)
+    except FileExistsError:
+        delete_temp_folder()
+        create_temp_folder()
+
+
+def frame_to_bytes(frame, student_id: int) -> bytes:
+    """
+    Takes a frame and converts it into a byte array. Also stores the image in a temporary folder as a side effect. For use to store into the database.
 
     Args:
-        img_path (str): The image's path.
-        temp_folder_path (str): Where to store the temporary BNW file.
+        img_path (str): A compatbile MatLike.
+        student_id (int): The student's ID whose photo image is being processed. To be used as the image's name.
         
     Returns:
-        BufferedReader: The image's binary array.
+        image_byte_array: The image's byte array.
     """
-    temp_image_name = str(uuid4())
-    bnw_image = Image.open(img_path).convert('1')
-    bnw_image_path = temp_folder_path + '/' + temp_image_name + '.jpg'
+    temp_image_name = str(student_id)
+    image = Image.fromarray(frame)
+    bnw_image = image.convert('L')
+    bnw_image_path = TEMP_IMAGE_PATH + temp_image_name + '.jpg'
     bnw_image.save(bnw_image_path)
+
     with open(bnw_image_path, 'rb') as file:
-        temp_image = file.read()
+        image_byte_array = file.read()
 
-    return temp_image
 
-def binary_to_image(image_array) -> str:
-    """
-    Args:
-        image_array: An image's binary array.
-    Returns:
-        str: The resulting image's file path.
-    """
-    temp_image = tempfile.NamedTemporaryFile(suffix='.jpg', delete=False)
-    print(temp_image.name)
-    with open(temp_image.name, 'wb') as file:
-        file.write(image_array[0])
-        
-    return temp_image
+    return image_byte_array
+
+def bytes_to_image(byte_array : bytes, student_id : int) -> str:
+    temp_image_name = str(student_id)
+    temp_image_path = TEMP_IMAGE_PATH + temp_image_name + '.jpg'
+    with open(temp_image_path, 'wb') as file:
+        file.write(byte_array)
