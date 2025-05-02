@@ -27,9 +27,16 @@ class Student:
     self.year : int = None
     self.temp_frame = None
 
-student = Student()
+  def submit_student(self):
+    insert_into_db(
+      id=self.id,
+      name=self.name,
+      image_array=frame_to_bytes(self.temp_frame, self.id),
+      course=self.course,
+      year=self.year
+    )
 
-image_array = None
+student = Student()
 
 # Font Default
 def set_font(size, weight):
@@ -63,7 +70,6 @@ def retrieve_db_data():
     return known_records
 
 def open_register_window(master):
-    global image_array
     recog_window = tk.Toplevel(master)
     recog_window.title('Register New Student')
     
@@ -80,10 +86,16 @@ def addrec_tab(main_frame):
   Method to save entries to database
   """
   def add_student():
-    stid = stid_entry.get().strip()
+    # Populat the student object with the entries ======================
+    student.id = stid_entry.get().strip()
+    
     lname = lname_entry.get().strip()
     fname = fname_entry.get().strip()
     mi = mi_entry.get().strip()
+    student.name = f"{lname}, {fname} {mi}."
+    
+    student.course = course_var.get().strip()
+    student.year = year_var.get().strip()
 
     if mi and (len(mi) != 1 or not mi.isalpha()):
       mi_entry.configure(
@@ -99,35 +111,15 @@ def addrec_tab(main_frame):
         border_color="#adadad"
       )
 
-    name = f"{lname}, {fname} {mi}."
-    course = course_var.get().strip()
-    year = year_var.get().strip()
 
-    image_array = frame_to_bytes(student.temp_frame, stid)
-
-    if not stid or not name or not course or not year or not image_array:
+    # Use student.temp_frame and not student.image_array to check if the user successfully registered their face.
+    # Because student.image_array is not set until the user clicks the register button.
+    if not student.id or not student.name or not student.course or not student.year or student.temp_frame is None:
         print("Whoopsie! You missed a spot.")
         return
 
-    insert_into_db(
-      id=stid,
-      name=name,
-      image_array=image_array,
-      course=course,
-      year=year
-    )
-
-    # Updated to use student class SAMPLE
-    # insert_into_db(
-    #   id=student.id,
-    #   name=student.name,
-    #   image_array=student.image_array,
-    #   course=student.course,
-    #   year=student.year
-    # )
-
+    student.submit_student()
   
-
     lname_entry.delete(0, "end")
     fname_entry.delete(0, "end")
     mi_entry.delete(0, "end")
