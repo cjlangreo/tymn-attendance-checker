@@ -17,20 +17,14 @@ sys.path.append(parent_dir)
 from lib.db_interface import insert_into_db, Courses, ColumnFilters
 from lib.img_manip import frame_to_bytes
 
-
-def check_temp_frame():
-  if student.temp_frame is None:
-    return False
-  return True
-
 class Student:
   def __init__(self):
     self.id : int = None
     self.name : str = None
-    self.image_array : bytes = None
     self.course : Courses = None
     self.year : int = None
     self.temp_frame = None
+    self.label_indicator : tk.Label = None
 
   def submit_student(self):
     insert_into_db(
@@ -42,11 +36,11 @@ class Student:
     )
 
   def set_temp_frame(self, frame):
-    self.temp_frame = frame
+     if frame is not None:
+        self.label_indicator.configure(text="Face registered! [checkmark icon]")
+        self.temp_frame = frame
 
-  
 student = Student()
-
 
 # Font Default
 def set_font(size, weight):
@@ -98,6 +92,7 @@ def addrec_tab(main_frame):
   """
   def add_student():
     # Populat the student object with the entries ======================
+    global student
     student.id = stid_entry.get().strip()
     
     lname = lname_entry.get().strip()
@@ -122,11 +117,18 @@ def addrec_tab(main_frame):
         border_color="#adadad"
       )
 
+    print("Student ID: ", student.id)
+    print("Student Name: ", student.name)
+    print("Student Course: ", student.course)
+    print("Student Year: ", student.year)
+    print("Student Image: ", student.temp_frame)
+
     # Use student.temp_frame and not student.image_array to check if the user successfully registered their face.
     # Because student.image_array is not set until the user clicks the register button.
     if not student.id or not student.name or not student.course or not student.year or student.temp_frame is None:
         print("Whoopsie! You missed a spot.")
         return
+
 
     student.submit_student()
   
@@ -136,6 +138,9 @@ def addrec_tab(main_frame):
     stid_entry.delete(0, "end")
     course_var.set(0)
     year_var.set(0)
+    student = Student()
+    student.label_indicator = face_registered_indicator
+    face_registered_indicator.configure(text="")
 
   """
   Widgets Starts Here:
@@ -302,8 +307,9 @@ def addrec_tab(main_frame):
 
   ctk.CTkLabel(master=facedata_frame, text="Facial Data", font=set_font(32, "bold"), text_color="#d8d8d8").place(relx=0.05, rely=0.085)
   
-  registered_face = ctk.CTkLabel(master=facedata_frame, text="Face registered! [checkmark icon]", font=set_font(20, "normal"), text_color="green")
-  registered_face.place_forget()
+  face_registered_indicator = ctk.CTkLabel(master=facedata_frame, text="", font=set_font(20, "normal"), text_color="green")
+  face_registered_indicator.place(relx=0.2, rely=0.35)
+  student.label_indicator = face_registered_indicator
 
   # CAMERA HERE
   cam_btn = ctk.CTkButton(
@@ -334,4 +340,5 @@ def addrec_tab(main_frame):
   )
   submit_data.place(relx=0.5, rely=0.925, anchor="center")
   
+
   # return registered_face
