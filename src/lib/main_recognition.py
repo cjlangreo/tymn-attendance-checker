@@ -2,13 +2,14 @@ import face_recognition
 import cv2
 import time
 from lib import db_interface
-from db_interface import ColumnFilters
+from lib.db_interface import ColumnFilters
 from lib.img_manip import TEMP_IMAGE_PATH
+from gui.components.addrec_tab import Student
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 import tkinter
 import numpy as np
 
-video_capture = cv2.VideoCapture(2)
+video_capture = cv2.VideoCapture(0)
 
 def get_known_records():
     records = db_interface.pull_from_db(values=(ColumnFilters.ID, ColumnFilters.NAME, ColumnFilters.COURSE, ColumnFilters.YEAR)) # [(id, name, image_array, course, year), (...)}
@@ -24,8 +25,8 @@ def update_label_image(dest_label : tkinter.Label, src_image):
     dest_label.configure(image=tk_image)
     dest_label.image = tk_image
 
-def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.Toplevel, mode : str, student : any):
-    known_records = get_known_records()
+def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.Toplevel, mode : str, student : Student):
+    # known_records = get_known_records()
     process_this_frame : bool = True
     prev_name = ''
     start_time = time.time()
@@ -90,9 +91,7 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
                     case 'register':
                         image_draw_frame.rectangle([left, top, right, bottom], width=10, fill='red') # The bounding square
                         master_window.destroy()
-                        student.temp_frame = cropped_frame
-                        
-                        # student.is_face_registered(addrec_tab())
+                        student.set_temp_frame(cropped_frame)
                         break
                 
             prev_name = name
