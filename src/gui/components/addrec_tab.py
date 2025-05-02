@@ -16,7 +16,7 @@ sys.path.append(parent_dir)
 
 from lib.db_interface import insert_into_db, Courses, ColumnFilters
 from lib.img_manip import frame_to_bytes
-from lib.main_recognition import start_face_recognition
+
 
 class Student:
   def __init__(self):
@@ -35,6 +35,10 @@ class Student:
       course=self.course,
       year=self.year
     )
+
+  def is_face_registered(self, label):
+     if self.temp_frame is not None:
+        label.place(relx=0.2, rely=0.35)
 
 student = Student()
 
@@ -70,6 +74,8 @@ def retrieve_db_data():
     return known_records
 
 def open_register_window(master):
+    from lib.main_recognition import start_face_recognition
+    
     recog_window = tk.Toplevel(master)
     recog_window.title('Register New Student')
     
@@ -78,7 +84,6 @@ def open_register_window(master):
     
     face_recog_thread = threading.Thread(target=start_face_recognition, args=(image_label, recog_window, 'register', student))
     face_recog_thread.start()
-
 
 def addrec_tab(main_frame):
   """
@@ -152,6 +157,7 @@ def addrec_tab(main_frame):
   main.propagate(False)
   main.place(relwidth=1.0, relheight=1.0, x=0, y=0)
 
+
   # ====== CSS =========
   style = ttk.Style()
   style.theme_use("clam")
@@ -211,7 +217,7 @@ def addrec_tab(main_frame):
   ctk.CTkLabel(master=studinf_frame, text="Academic Information", font=set_font(36, "bold"), text_color="#d8d8d8").place(relx=0.025, rely=0.055)
 
 
-  ctk.CTkLabel(master=studinf_frame, text="Student ID:", font=set_font(20, "bold"), fg_color="transparent", text_color="#d8d8d8").place(relx=0.035, rely=0.2125)
+  
   stid_entry = ctk.CTkEntry(
     master=studinf_frame, 
     font=set_font_mono(19, "normal"),
@@ -290,6 +296,9 @@ def addrec_tab(main_frame):
   facedata_frame.propagate(False)
 
   ctk.CTkLabel(master=facedata_frame, text="Facial Data", font=set_font(32, "bold"), text_color="#d8d8d8").place(relx=0.05, rely=0.085)
+  
+  registered_face = ctk.CTkLabel(master=facedata_frame, text="Face registered! [checkmark icon]", font=set_font(20, "normal"), text_color="green")
+  registered_face.place_forget()
 
   # CAMERA HERE
   cam_btn = ctk.CTkButton(
@@ -319,3 +328,5 @@ def addrec_tab(main_frame):
     command=add_student
   )
   submit_data.place(relx=0.5, rely=0.925, anchor="center")
+  
+  # return registered_face

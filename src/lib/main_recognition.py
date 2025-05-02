@@ -3,11 +3,12 @@ import cv2
 import time
 from lib import db_interface
 from lib.img_manip import TEMP_IMAGE_PATH, frame_to_bytes
+# from gui.components.addrec_tab import addrec_tab
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 import tkinter
 import numpy as np
 
-video_capture = cv2.VideoCapture(0)
+video_capture = cv2.VideoCapture(2)
 
 def update_label_image(dest_label : tkinter.Label, src_image):
     tk_image = ImageTk.PhotoImage(src_image)
@@ -81,6 +82,8 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
                         image_draw_frame.rectangle([left, top, right, bottom], width=10, fill='red') # The bounding square
                         master_window.destroy()
                         student.temp_frame = cropped_frame
+                        
+                        # student.is_face_registered(addrec_tab())
                         break
                 
             prev_name = name
