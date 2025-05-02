@@ -119,6 +119,10 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
                             student.set_temp_frame(cropped_frame)
                             master_window.destroy()
                             break
+                # case 'a':
+                    # if (name == prev_name) and (name != "Unknown") and (face_location != []):
+                        # 
+
                     
                         
             text_to_draw = f"Name: {name}\nID: {id}\nCourse: {course}\nYear: {year}"
