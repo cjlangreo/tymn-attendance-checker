@@ -111,7 +111,6 @@ def addrec_tab(main_frame):
         border_color="#adadad"
       )
 
-
     # Use student.temp_frame and not student.image_array to check if the user successfully registered their face.
     # Because student.image_array is not set until the user clicks the register button.
     if not student.id or not student.name or not student.course or not student.year or student.temp_frame is None:
