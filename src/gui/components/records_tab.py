@@ -119,4 +119,4 @@ def records_tab(main_frame):
     for row in rows:
       tree.insert("", "end", values=row)
 
-  show_records() 
+  show_records()
