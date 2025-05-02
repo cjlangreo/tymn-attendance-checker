@@ -18,6 +18,11 @@ from lib.db_interface import insert_into_db, Courses, ColumnFilters
 from lib.img_manip import frame_to_bytes
 
 
+def check_temp_frame():
+  if student.temp_frame is None:
+    return False
+  return True
+
 class Student:
   def __init__(self):
     self.id : int = None
@@ -36,11 +41,12 @@ class Student:
       year=self.year
     )
 
-  def is_face_registered(self, label):
-     if self.temp_frame is not None:
-        label.place(relx=0.2, rely=0.35)
+  def set_temp_frame(self, frame):
+    self.temp_frame = frame
 
+  
 student = Student()
+
 
 # Font Default
 def set_font(size, weight):

@@ -2,13 +2,22 @@ import face_recognition
 import cv2
 import time
 from lib import db_interface
-from lib.img_manip import TEMP_IMAGE_PATH, frame_to_bytes
-# from gui.components.addrec_tab import addrec_tab
+from db_interface import ColumnFilters
+from lib.img_manip import TEMP_IMAGE_PATH
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 import tkinter
 import numpy as np
 
 video_capture = cv2.VideoCapture(2)
+
+def get_known_records():
+    records = db_interface.pull_from_db(values=(ColumnFilters.ID, ColumnFilters.NAME, ColumnFilters.COURSE, ColumnFilters.YEAR)) # [(id, name, image_array, course, year), (...)}
+    encodings = []
+    for id in records[0]:
+        image = face_recognition.load_image_file(TEMP_IMAGE_PATH + str(id) + '.jpg')
+        encoding = face_recognition.face_encodings(image)[0]
+        encoding.append(encoding)
+
 
 def update_label_image(dest_label : tkinter.Label, src_image):
     tk_image = ImageTk.PhotoImage(src_image)
@@ -16,7 +25,7 @@ def update_label_image(dest_label : tkinter.Label, src_image):
     dest_label.image = tk_image
 
 def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.Toplevel, mode : str, student : any):
-    known_face_encodings = []
+    known_records = get_known_records()
     process_this_frame : bool = True
     prev_name = ''
     start_time = time.time()
