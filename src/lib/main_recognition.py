@@ -7,14 +7,14 @@ from PIL import Image, ImageDraw, ImageFont, ImageTk
 import tkinter
 import numpy as np
 
-video_capture = cv2.VideoCapture(2)
+video_capture = cv2.VideoCapture(0)
 
 def update_label_image(dest_label : tkinter.Label, src_image):
     tk_image = ImageTk.PhotoImage(src_image)
     dest_label.configure(image=tk_image)
     dest_label.image = tk_image
 
-def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.Toplevel, mode : str):
+def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.Toplevel, mode : str, student : any):
     known_face_encodings = []
     process_this_frame : bool = True
     prev_name = ''
@@ -78,15 +78,9 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
             if (start_time + 3) - time.time() < 0:
                 match mode:
                     case 'register':
-                        db_interface.insert_into_db(
-                            11172,
-                            'Chanz',
-                            frame_to_bytes(cropped_frame, 11172),
-                            'BSIT',
-                            1
-                        )
                         image_draw_frame.rectangle([left, top, right, bottom], width=10, fill='red') # The bounding square
                         master_window.destroy()
+                        student.temp_frame = cropped_frame
                         break
                 
             prev_name = name
@@ -103,10 +97,8 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
                 image_font = ImageFont.truetype('src/lib/Lexend.ttf', size=15)
                 image_draw_frame.multiline_text([left, bottom, right, bottom + 50], text=text_to_draw, font=image_font)
             
+            update_label_image(dest_label, frame_image)
         process_this_frame = not process_this_frame
-        update_label_image(dest_label, frame_image)
-
-    
 
         
 
