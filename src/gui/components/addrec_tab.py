@@ -117,6 +117,17 @@ def addrec_tab(main_frame):
       year=year
     )
 
+    # Updated to use student class SAMPLE
+    # insert_into_db(
+    #   id=student.id,
+    #   name=student.name,
+    #   image_array=student.image_array,
+    #   course=student.course,
+    #   year=student.year
+    # )
+
+  
+
     lname_entry.delete(0, "end")
     fname_entry.delete(0, "end")
     mi_entry.delete(0, "end")
