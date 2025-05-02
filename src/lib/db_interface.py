@@ -88,12 +88,18 @@ def pull_from_db(values : tuple[ColumnFilters] | None = '*', filter : tuple[Colu
         filter (tuple[ColumnFilters, any]): A tuple[ColumnFilters, any] to filter the query by column with a value.
 
     Returns:
-        list[tuple]: A list containing all the records from the query.
+        list[tuple]: A list containing all the records from the query [id, name, image_array, course, year].
     """
 
     if filter:
         filter = f" WHERE {filter[0]}='{filter[1]}'"
 
-    res = cur.execute(f"SELECT {values} FROM registered_students{filter}")
+    if values != '*':
+        values = ', '.join(values)
+        
+    query = f"SELECT {values} FROM registered_students{filter}"
+    print(query)
+
+    res = cur.execute(query)
 
     return res.fetchall()
