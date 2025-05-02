@@ -4,15 +4,9 @@ import customtkinter as ctk
 from tkinter import ttk, filedialog
 import tkinter.font as tkFont
 
-from lib import main_recognition
 from lib import db_interface
-from lib import img_manip
 from PIL import ImageTk, Image, ImageDraw, ImageFont
-import face_recognition
-import time
-import numpy as np
 import threading
-
 
 # import subprocess
 # from fakedb import connect_db
@@ -20,10 +14,22 @@ import threading
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
 
-from lib.db_interface import insert_into_db, Courses
-from lib.img_manip import image_to_binary
+from lib.db_interface import insert_into_db, Courses, ColumnFilters
+from lib.img_manip import frame_to_bytes
+from lib.main_recognition import start_face_recognition
 
+class Student:
+  def __init__(self):
+    self.id : int = None
+    self.name : str = None
+    self.image_array : bytes = None
+    self.course : Courses = None
+    self.year : int = None
+    self.temp_frame = None
 
+student = Student()
+
+image_array = None
 
 # Font Default
 def set_font(size, weight):
@@ -56,104 +62,24 @@ def retrieve_db_data():
 
     return known_records
 
-
- # Facial Recognition
-def start_face_recognition(dest_label : tk.Label, master_window : tk.Toplevel, mode : str):
-    """
-
-    Args:
-        dest_label:
-        mode: hello
-    """
-    known_records = retrieve_db_data()
-    process_this_frame : bool = True
-    prev_name = ''
-    start_time = time.time()
-    time_left = start_time + 3
-
-    while True:
-        if process_this_frame:
-            frame_data = main_recognition.retrieve_frame_data() # (frame, face_encodings, face_locations)
-            
-            frame = frame_data[0]
-            face_encodings = frame_data[1]
-            face_locations = frame_data[2]
-
-            frame_image : Image = Image.fromarray(frame)
-            image_draw_frame = ImageDraw.ImageDraw(frame_image)
-            
-            face_names = []
-            name = "Unknown"
-            
-            # Match the names
-            if len(known_records[2]) > 0 and len(face_encodings) > 0: # Because compare_faces breaks when face_encodings is empty.
-                matches : list[any] = face_recognition.compare_faces(known_records[2], face_encodings[0])
-                print(matches)
-                face_distances = face_recognition.face_distance(known_records[2], face_encodings[0])
-                best_match_index = np.argmin(face_distances) # find the smallest value of 'face_distances' by index
-        
-                if matches[best_match_index]:
-                    name = known_records[1][best_match_index]
-
-            face_names.append(name)
-
-            box_outline_color = 'white'
-
-            match mode:
-                case 'register':
-                    if face_encodings:
-                        if prev_name == name == 'Unknown':
-                            print('Face recognized')
-                            print(f'Time remaining: {time_left - time.time()}')
-                    else:
-                        start_time = time.time()
-                        time_left = start_time + 3
-
-            if (start_time + 3) - time.time() < 0:
-                image_draw_frame.rectangle([left, top, right, bottom], width=10, outline='red') # The bounding square
-                print(img_manip.image_to_binary(frame_image, "src/gui/img_bnw"))
-                master_window.destroy()
-                
-            prev_name = name
-            
-            for (top, right, bottom, left), name in zip(face_locations, face_names):
-                top *= 4
-                left *= 4
-                right *= 4
-                bottom *= 4
-        
-                text_to_draw = f"Name: {name}\nID: {top}"
-        
-                image_draw_frame.rectangle([left, top, right, bottom], width=10, outline=box_outline_color) # The bounding square
-                image_font = ImageFont.truetype('src/lib/Lexend.ttf', size=15)
-                image_draw_frame.multiline_text([left, bottom, right, bottom + 50], text=text_to_draw, font=image_font)
-            
-        process_this_frame = not process_this_frame
-        update_label_image(dest_label, frame_image)
-
-
 def open_register_window(master):
+    global image_array
     recog_window = tk.Toplevel(master)
     recog_window.title('Register New Student')
     
     image_label = tk.Label(recog_window)
     image_label.pack()
     
-    face_recog_thread = threading.Thread(target=start_face_recognition, args=(image_label, recog_window, 'register'))
+    face_recog_thread = threading.Thread(target=start_face_recognition, args=(image_label, recog_window, 'register', student))
     face_recog_thread.start()
 
 
 def addrec_tab(main_frame):
-
-  img_path = None
-
   """
   Minimize below method to proceed to widgets
   Method to save entries to database
   """
   def add_student():
-    nonlocal img_path
-
     stid = stid_entry.get().strip()
     lname = lname_entry.get().strip()
     fname = fname_entry.get().strip()
@@ -177,9 +103,7 @@ def addrec_tab(main_frame):
     course = course_var.get().strip()
     year = year_var.get().strip()
 
-    image_array = None
-    if img_path:
-      image_array = image_to_binary(img_path, "src/gui/img_bnw")
+    image_array = frame_to_bytes(student.temp_frame, stid)
 
     if not stid or not name or not course or not year or not image_array:
         print("Whoopsie! You missed a spot.")
@@ -199,7 +123,6 @@ def addrec_tab(main_frame):
     stid_entry.delete(0, "end")
     course_var.set(0)
     year_var.set(0)
-    img_path = None
 
   """
   Widgets Starts Here:
