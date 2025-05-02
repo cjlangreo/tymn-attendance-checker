@@ -14,6 +14,7 @@ import threading
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
 
+from lib.main_recognition import start_face_recognition
 from lib.db_interface import insert_into_db, Courses, ColumnFilters
 from lib.img_manip import frame_to_bytes
 
@@ -25,6 +26,7 @@ class Student:
     self.year : int = None
     self.temp_frame = None
     self.label_indicator : tk.Label = None
+    self.date_time = None
 
   def submit_student(self):
     insert_into_db(
@@ -36,9 +38,11 @@ class Student:
     )
 
   def set_temp_frame(self, frame):
-     if frame is not None:
-        self.label_indicator.configure(text="Face registered! [checkmark icon]")
-        self.temp_frame = frame
+      self.label_indicator.configure(text="Face registered! [checkmark icon]")
+      self.temp_frame = frame
+
+  def set_date_time(self, date_time):
+      self.date_time = date_time
 
 student = Student()
 
@@ -74,7 +78,6 @@ def retrieve_db_data():
     return known_records
 
 def open_register_window(master):
-    from lib.main_recognition import start_face_recognition
     
     recog_window = tk.Toplevel(master)
     recog_window.title('Register New Student')
@@ -82,7 +85,7 @@ def open_register_window(master):
     image_label = tk.Label(recog_window)
     image_label.pack()
     
-    face_recog_thread = threading.Thread(target=start_face_recognition, args=(image_label, recog_window, 'register', student))
+    face_recog_thread = threading.Thread(target=start_face_recognition, args=(image_label, recog_window, 'r', student))
     face_recog_thread.start()
 
 def addrec_tab(main_frame):
@@ -138,9 +141,9 @@ def addrec_tab(main_frame):
     stid_entry.delete(0, "end")
     course_var.set(0)
     year_var.set(0)
-    student = Student()
-    student.label_indicator = face_registered_indicator
-    face_registered_indicator.configure(text="")
+    student = Student() # We reinstantiate the student object to clear the previous entries.
+    student.label_indicator = face_registered_indicator # We reassign the label indicator to the new student object.
+    face_registered_indicator.configure(text="") # We clear the label indicator text.
 
   """
   Widgets Starts Here:
