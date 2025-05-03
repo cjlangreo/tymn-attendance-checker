@@ -8,9 +8,6 @@ from lib import db_interface
 from PIL import ImageTk, Image, ImageDraw, ImageFont
 import threading
 
-# import subprocess
-# from fakedb import connect_db
-
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
 
@@ -229,7 +226,7 @@ def addrec_tab(main_frame):
 
   ctk.CTkLabel(master=studinf_frame, text="Academic Information", font=set_font(36, "bold"), text_color="#d8d8d8").place(relx=0.025, rely=0.055)
 
-
+  
   
   stid_entry = ctk.CTkEntry(
     master=studinf_frame, 

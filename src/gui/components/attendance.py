@@ -1,7 +1,9 @@
 import os, sys
 import customtkinter as ctk
 from tkinter import *
+from tkinter import ttk
 import datetime as dt
+
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
@@ -38,6 +40,51 @@ def attendance_tab(main_frame):
     corner_radius=16,
   )
   table_frame.place(relx=0.5, rely=0.5, relwidth=0.95, relheight=0.7, anchor="c")
+
+  tree = ttk.Treeview(master=table_frame, columns=("Name", "Date", "Time"), show="headings")
+  
+  def relative_width(event):
+    tree_width = tree.winfo_width()
+
+    tree.column("Name", width=int(tree_width * 0.4))
+    tree.column("Time", width=int(tree_width * 0.3))
+    tree.column("Date", width=int(tree_width * 0.3))
+
+  tree.heading("Name", text="Name")
+  tree.heading("Time", text="Time")
+  tree.heading("Date", text="Date")
+
+  tree.bind("<Configure>", relative_width)
+
+  style = ttk.Style()
+  style.theme_use("default")
+
+  style.configure(
+    "Treeview",
+    background="red",
+    foreground="#adadad",
+    fieldbackground="transparent",
+    font=("Ubuntu Mono", 14, "normal"),
+    rowheight=50,
+    borderwidth=0,
+  )
+
+  style.configure(
+    "Treeview.Heading",
+    font=("Ubuntu", 16, "bold"),
+    relief="flat",
+    borderwidth=0,
+    height=50,
+    background="#1a1a1a",
+    foreground="#d8d8d8"
+  )
+
+  tree.pack(
+    side="top",
+    expand=True,
+    fill="y",
+    pady=20,
+  )
 
   scan_btn = ctk.CTkButton(
     master=main,
