@@ -21,10 +21,10 @@ def attendance_tab(main_frame):
 
 
   date = ctk.CTkLabel(master=main, text=f"{dt.datetime.now():%A, %B %d, %Y}", font=set_font(24, "bold"))
-  date.pack()
+  date.place(relx=1, rely=0.1, anchor="e")
 
-  time = ctk.CTkLabel(master=main, font=set_font(32, "bold"))
-  time.pack(pady=10)
+  time = ctk.CTkLabel(master=main, font=set_font(48, "bold"))
+  time.place(relx=0.965, rely=0.18, anchor="e")
 
   def clock():
     datetime = dt.datetime.now() 
@@ -39,7 +39,7 @@ def attendance_tab(main_frame):
     fg_color="#2a2a2a",
     corner_radius=16,
   )
-  table_frame.place(relx=0.5, rely=0.5, relwidth=0.95, relheight=0.7, anchor="c")
+  table_frame.place(relx=0.33, rely=0.5, relwidth=0.67, relheight=0.95, anchor="c")
 
   tree = ttk.Treeview(master=table_frame, columns=("Name", "Date", "Time"), show="headings")
   
@@ -61,7 +61,7 @@ def attendance_tab(main_frame):
 
   style.configure(
     "Treeview",
-    background="red",
+    background="#2a2a2a",
     foreground="#adadad",
     fieldbackground="transparent",
     font=("Ubuntu Mono", 14, "normal"),
@@ -89,13 +89,15 @@ def attendance_tab(main_frame):
   scan_btn = ctk.CTkButton(
     master=main,
     text="Scan",
-    font=set_font(20, "bold"),
-    fg_color="#E36A00",
+    font=set_font(28, "bold"),
+    fg_color="transparent",
     text_color="#d8d8d8",
-    border_width=0,
+    border_width=2,
+    border_color="#474747",
     cursor="hand2",
-    height=50,
-    corner_radius=25
+    height=75,
+    width=256,
+    corner_radius=16
   )
-  scan_btn.place(relx=0.5, rely=0.95, anchor="c")
+  scan_btn.place(relx=1, rely=0.35, anchor="e")
 

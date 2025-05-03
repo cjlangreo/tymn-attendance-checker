@@ -35,7 +35,7 @@ class Student:
     )
 
   def set_temp_frame(self, frame):
-      self.label_indicator.configure(text="Face registered! [checkmark icon]")
+      self.label_indicator.configure(text="Face registered!")
       self.temp_frame = frame
 
   def set_date_time(self, date_time):
@@ -116,6 +116,11 @@ def addrec_tab(main_frame):
         border_width=0,
         border_color="#adadad"
       )
+
+    # if not student.id:
+    #    stid_entry.configure(borderwidth=2, border_color="red")
+    # if not student.course:
+    #    stid_entry.configure(borderwidth=2, border_color="red")
 
     print("Student ID: ", student.id)
     print("Student Name: ", student.name)
@@ -226,7 +231,7 @@ def addrec_tab(main_frame):
 
   ctk.CTkLabel(master=studinf_frame, text="Academic Information", font=set_font(36, "bold"), text_color="#d8d8d8").place(relx=0.025, rely=0.055)
 
-  
+  ctk.CTkLabel(master=studinf_frame, text="Student ID:", font=set_font(20, "bold"), text_color="#d8d8d8").place(relx=0.035, rely=0.2125)  
   
   stid_entry = ctk.CTkEntry(
     master=studinf_frame, 
@@ -236,7 +241,7 @@ def addrec_tab(main_frame):
     text_color="#adadad",
     border_width=0
   )
-  stid_entry.place(relx=0.175, rely=0.2, relwidth=0.1, relheight=0.1)
+  stid_entry.place(relx=0.16, rely=0.2, relwidth=0.1, relheight=0.1)
 
 # Course ============================================
 
