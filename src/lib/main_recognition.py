@@ -1,7 +1,7 @@
 import face_recognition
 import cv2
 import time
-from lib.db_interface import ColumnFilters, Courses, insert_into_db, Tables, pull_from_db
+from lib.db_interface import RegStdsColumns, Courses, insert_into_db, Tables, pull_from_db
 from lib.img_manip import TEMP_IMAGE_PATH, frame_to_bytes
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 import tkinter
@@ -63,7 +63,7 @@ def _value_to_hex(value, max, multiplier, reverse : bool = False) -> float:
     return f'{hex_value:02x}'
 
 def get_known_records():
-    records = pull_from_db(table=Tables.REGISTERED_STUDENTS, values=(ColumnFilters.ID, ColumnFilters.NAME, ColumnFilters.COURSE, ColumnFilters.YEAR)) # [(id, name, course, year), (...)}
+    records = pull_from_db(table=Tables.REGISTERED_STUDENTS, values=(RegStdsColumns.ID, RegStdsColumns.NAME, RegStdsColumns.COURSE, RegStdsColumns.YEAR)) # [(id, name, course, year), (...)}
     
     known_id = []
     known_name = []

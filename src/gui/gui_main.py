@@ -4,12 +4,13 @@ from components.student_list import display_list
 from components.student_form import display_form
 from components.attendance_log import display_log
 from lib.img_manip import create_temp_folder, bytes_to_image
-from lib.db_interface import pull_from_db, ColumnFilters, Tables
+from lib.db_interface import pull_from_db, RegStdsColumns, Tables
 
 # Create the temp folder and load all images
 create_temp_folder()
-records = pull_from_db(table=Tables.REGISTERED_STUDENTS, values=(ColumnFilters.ID, ColumnFilters.IMAGE_ARRAY))
+records = pull_from_db(table=Tables.REGISTERED_STUDENTS, values=(RegStdsColumns.ID, RegStdsColumns.IMAGE_ARRAY))
 for record in records:
+    print(record)
     bytes_to_image(record[1], record[0])
 
 # Create a window

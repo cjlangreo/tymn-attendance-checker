@@ -6,12 +6,17 @@ from os import path
 
 db_path = 'src/lib/faces.db'
 
-class ColumnFilters:
-    ID = 'id'
-    NAME = 'name'
-    IMAGE_ARRAY = 'image_array'
-    COURSE = 'course'
-    YEAR = 'year'
+class RegStdsColumns:
+    ID = 'rs.id'
+    NAME = 'rs.name'
+    IMAGE_ARRAY = 'rs.image_array'
+    COURSE = 'rs.course'
+    YEAR = 'rs.year'
+
+class AttendanceColumns:
+    DATE = 'a.date'
+    TIME = 'a.time'
+    ID = 'a.student'
 
 class Courses:
     BSCS = 'BSCS'
@@ -25,8 +30,8 @@ class Courses:
     BSBA = 'BSBA'
 
 class Tables:
-    REGISTERED_STUDENTS = 'registered_students'
-    ATTENDANCE = 'attendance'
+    REGISTERED_STUDENTS = 'registered_students rs'
+    ATTENDANCE = 'attendance a'
 
 if not path.exists(db_path):
     print('Database file doesn\'t exist, creating it now.')
@@ -80,7 +85,7 @@ def insert_into_db(table : Tables, id : int | None = None, name : str | None = N
             course,
             year
         ]
-        cur.execute(f"INSERT INTO {table} VALUES(?, ?, ?, ?, ?)", data_to_db)
+        cur.execute(f"INSERT INTO {table.split(maxsplit=1)[0]} VALUES(?, ?, ?, ?, ?)", data_to_db)
         
     else:
         data_to_db = [
@@ -88,24 +93,13 @@ def insert_into_db(table : Tables, id : int | None = None, name : str | None = N
             time,
             id
         ]
-        cur.execute(f"INSERT INTO {table} VALUES(?, ?, ?)", data_to_db)
+        cur.execute(f"INSERT INTO {table.split(maxsplit=1)[0]} VALUES(?, ?, ?)", data_to_db)
 
-    
+
 
     con.commit()
 
-def pull_from_db(table : Tables, values : tuple[ColumnFilters] | None = '*', filter : tuple[ColumnFilters, any] | None = '') -> list[tuple]:
-    """
-    Queries the database.
-
-    Args:
-        values (tuple[ColumnFilters]): A tuple[ColumnFilters] to select what columns to query.
-        filter (tuple[ColumnFilters, any]): A tuple[ColumnFilters, any] to filter the query by column with a value.
-
-    Returns:
-        list[tuple]: A list containing all the records from the query [id, name, image_array, course, year].
-    """
-
+def pull_from_db(table : tuple[Tables], values : tuple[RegStdsColumns | AttendanceColumns] | None = '*', filter : tuple[(RegStdsColumns | AttendanceColumns, any)] | None = '') -> list[tuple]:
     if filter:
         filter = f" WHERE {filter[0]}='{filter[1]}'"
 
