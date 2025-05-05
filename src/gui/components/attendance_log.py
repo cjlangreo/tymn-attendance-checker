@@ -19,7 +19,7 @@ def display_log(main_frame):
   main.propagate(False)
   main.place(relx=0.5, rely=0.5, relwidth=0.9, relheight=0.9, anchor="c")
 
-
+  # Clock ========================================
   date = ctk.CTkLabel(master=main, text=f"{dt.datetime.now():%A, %B %d, %Y}", font=set_font(24, "bold"))
   date.place(relx=1, rely=0.1, anchor="e")
 
@@ -34,6 +34,7 @@ def display_log(main_frame):
 
   clock()
 
+  # Table =========================================
   table_frame = ctk.CTkFrame(
     master=main, 
     fg_color="#2a2a2a",
