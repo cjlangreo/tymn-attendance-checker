@@ -23,6 +23,7 @@ class Student:
     self.year : int = None
     self.temp_frame = None
     self.label_indicator : tk.Label = None
+    self.register_button : ctk.CTkButton
     self.date_time = None
 
   def submit_student(self):
@@ -35,7 +36,8 @@ class Student:
     )
 
   def set_temp_frame(self, frame):
-      self.label_indicator.configure(text="Face registered!")
+      self.register_button.configure(border_color="#474747")
+      self.label_indicator.configure(text="Face registered! ✔")
       self.temp_frame = frame
 
   def set_date_time(self, date_time):
@@ -87,16 +89,17 @@ def open_register_window(master):
 
 def display_form(main_frame):
   """
-  Minimize below method to proceed to widgets
+  Minimize below methods to proceed to widgets
   Method to save entries to database
   """
-  def reset_validation():
-    for entry in [fname_entry, mi_entry, lname_entry, stid_entry]:
-      entry.configure(border_width=0)
-    for btns in [course_btns, year_btns]:
-      for btn in btns:
-        btn.configure(border_color="#adadad")
-    cam_btn.configure(border_width=0)
+  def event_listener(event, index):
+     widgets = [fname_entry, mi_entry, lname_entry, stid_entry, course_btns, year_btns]
+     match index:
+        case 0|1|2|3:
+           widgets[index].configure(border_width=0)
+        case 4|5:
+           for btn in widgets[index]:
+              btn.configure(border_color="#adadad")
 
   def add_student():
     # Populat the student object with the entries ======================
@@ -113,7 +116,7 @@ def display_form(main_frame):
 
     # Validation Checker
     # Reset previous invalid entries back to their OG form first
-    reset_validation()
+    # reset_validation()
     #Checks for any invalid or empty entries
     if not student.id or not student.name or not student.course or not student.year or student.temp_frame is None:
       if mi and (len(mi) != 1 or not mi.isalpha()):
@@ -212,6 +215,7 @@ def display_form(main_frame):
     border_width=0
   )
   fname_entry.place(relx=0.075, rely=0.325, relwidth=0.5, relheight=0.25)
+  fname_entry.bind("<KeyPress>", lambda event: event_listener(event, 0))
 
   mi_entry = ctk.CTkEntry(
     master=persinf_frame, 
@@ -223,6 +227,7 @@ def display_form(main_frame):
     border_width=0
   )
   mi_entry.place(relx=0.625, rely=0.325, relwidth=0.2, relheight=0.25)
+  mi_entry.bind("<KeyPress>", lambda event: event_listener(event, 1))
 
   lname_entry = ctk.CTkEntry(
     master=persinf_frame, 
@@ -234,6 +239,7 @@ def display_form(main_frame):
     border_width=0
   )
   lname_entry.place(relx=0.075, rely=0.65, relwidth=0.75, relheight=0.25)
+  lname_entry.bind("<KeyPress>", lambda event: event_listener(event, 2))
 
 # Face Registration =========================================
 
@@ -245,8 +251,8 @@ def display_form(main_frame):
 
   ctk.CTkLabel(master=facedata_frame, text="Facial Data", font=set_font(32, "bold"), text_color="#d8d8d8").place(relx=0.05, rely=0.085)
   
-  face_registered_indicator = ctk.CTkLabel(master=facedata_frame, text="", font=set_font(20, "normal"), text_color="green")
-  face_registered_indicator.place(relx=0.2, rely=0.35)
+  face_registered_indicator = ctk.CTkLabel(master=facedata_frame, text="", font=set_font(24, "normal"), text_color="green")
+  face_registered_indicator.place(relx=0.9, rely=0.375, anchor="e")
   student.label_indicator = face_registered_indicator
 
   # CAMERA HERE
@@ -261,6 +267,7 @@ def display_form(main_frame):
     command=lambda: open_register_window(facedata_frame)
   )
   cam_btn.place(relx=0.5, rely=0.65, relwidth=0.8, relheight=0.35, anchor="c")
+  student.register_button = cam_btn
 
 # Student ID ==============================
 
@@ -283,6 +290,7 @@ def display_form(main_frame):
     border_width=0
   )
   stid_entry.place(relx=0.16, rely=0.2, relwidth=0.1, relheight=0.1)
+  stid_entry.bind("<KeyPress>", lambda event: event_listener(event, 3))
 
 # Course ============================================
 
@@ -320,6 +328,7 @@ def display_form(main_frame):
       cursor="hand2"
     )
     btn.grid(row=row, column=col, padx=[0, 120], pady=5)
+    btn.bind("<Button-1>", lambda event: event_listener(event, 4))
     course_btns.append(btn)
 
 # Year =================================================
@@ -350,6 +359,7 @@ def display_form(main_frame):
       cursor="hand2"
     )
     btn.pack(side="left", padx=[20, 0])
+    btn.bind("<Button-1>", lambda event: event_listener(event, 5))
     year_btns.append(btn)
 
 # Submit ===========================================
