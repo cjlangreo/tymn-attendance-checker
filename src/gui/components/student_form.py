@@ -85,7 +85,7 @@ def open_register_window(master):
     face_recog_thread = threading.Thread(target=start_face_recognition, args=(image_label, recog_window, 'r', student))
     face_recog_thread.start()
 
-def addrec_tab(main_frame):
+def display_form(main_frame):
   """
   Minimize below method to proceed to widgets
   Method to save entries to database

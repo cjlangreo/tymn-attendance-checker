@@ -4,7 +4,7 @@ import customtkinter as ctk
 def set_font(size, weight):
   return ctk.CTkFont(family="Ubuntu", size=size, weight=weight)
 
-def set_nav(nav_frame, main_frame, attendance_tab, records_tab, addrec_tab):
+def set_nav(nav_frame, main_frame, display_log, display_list, display_form):
 
   # Active Tab
   def active(bar, tab):
@@ -36,7 +36,7 @@ def set_nav(nav_frame, main_frame, attendance_tab, records_tab, addrec_tab):
     border_width=0,
     height=50,
     anchor="w",
-    command=lambda: active(attendance_bar, attendance_tab)
+    command=lambda: active(attendance_bar, display_log)
   )
   attendance_btn.place(x=30, y=50, relwidth=1.0)
 
@@ -50,7 +50,7 @@ def set_nav(nav_frame, main_frame, attendance_tab, records_tab, addrec_tab):
     hover_color="#1a1a1a",
     border_width=0,
     anchor="w",
-    command=lambda: active(records_bar, records_tab)
+    command=lambda: active(records_bar, display_list)
   )
   records_btn.place(x=30, y=100, relwidth=1.0)
 
@@ -64,7 +64,7 @@ def set_nav(nav_frame, main_frame, attendance_tab, records_tab, addrec_tab):
     border_width=0,
     height=50,
     anchor="w",
-    command=lambda: active(addrec_bar, addrec_tab)
+    command=lambda: active(addrec_bar, display_form)
   )
   addrecds_btn.place(x=30, y=150, relwidth=1.0)
 

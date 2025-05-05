@@ -11,7 +11,7 @@ from lib.db_interface import pull_from_db
 def set_font(size, weight):
   return ctk.CTkFont(family="Ubuntu", size=size, weight=weight)
 
-def records_tab(main_frame):
+def display_list(main_frame):
   main = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"))
   main.propagate(False)
   main.place(relx=0.5, rely=0.5, relwidth=0.9, relheight=0.9, anchor="c")

@@ -14,7 +14,7 @@ from lib.db_interface import pull_from_db
 def set_font(size, weight):
   return ctk.CTkFont(family="Ubuntu", size=size, weight=weight)
 
-def attendance_tab(main_frame):
+def display_log(main_frame):
   main = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"))
   main.propagate(False)
   main.place(relx=0.5, rely=0.5, relwidth=0.9, relheight=0.9, anchor="c")
@@ -100,4 +100,16 @@ def attendance_tab(main_frame):
     corner_radius=16
   )
   scan_btn.place(relx=1, rely=0.35, anchor="e")
+
+  # Display Database
+  # def show_records():
+  #   for row in tree.get_children():
+  #     tree.delete(row)
+    
+  #   rows = pull_from_db()
+  #   # print(rows)
+  #   for row in rows:
+  #     tree.insert("", "end", values=row)
+
+  # show_records()
 
