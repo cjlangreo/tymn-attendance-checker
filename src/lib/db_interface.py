@@ -100,6 +100,14 @@ def insert_into_db(table : Tables, id : int | None = None, name : str | None = N
     con.commit()
 
 def pull_from_db(table : tuple[Tables], values : tuple[RegStdsColumns | AttendanceColumns] | None = '*', filter : tuple[(RegStdsColumns | AttendanceColumns, any)] | None = '') -> list[tuple]:
+    """
+    Takes a tuple of Tables (and JOIN if multiple) and queries them with the passed values and filter arguments.
+
+    Args:
+        table (tuple[Tables]): Takes a tuple consisting of Tables and JOINs them if > 1.
+        values (tuple[RegStdsColumns | AttendanceColumns]): Takes a tuple of either RegStdsColumns or AttendanceColumns to return only those columns.
+        filter (tuple[RegStdsColumns | AttendanceColumns, any): Takes a tuple of either RegStdsColumns or AttendanceColumns and a value to filter those columns with.
+    """
     if filter:
         filter = f" WHERE {filter[0]}='{filter[1]}'"
 
