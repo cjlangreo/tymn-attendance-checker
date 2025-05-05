@@ -9,7 +9,16 @@ import tkinter
 import numpy as np
 import os
 
-video_capture = cv2.VideoCapture(2)
+video_capture = cv2.VideoCapture(0)
+
+def _value_to_hex(value, max, multiplier) -> float:
+    if value > max:
+        value =  max
+
+    hex_value = int((value / max) * multiplier)
+    return f'{hex_value:02x}'
+
+
 
 
 def get_known_records():
@@ -100,6 +109,8 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
                 pass
 
             prev_name = name
+            
+
 
             print('Time left:', time_left - time.time())
             match mode:
@@ -123,7 +134,6 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
                     # if (name == prev_name) and (name != "Unknown") and (face_location != []):
                         # 
 
-                    
                         
             text_to_draw = f"Name: {name}\nID: {id}\nCourse: {course}\nYear: {year}"
 
@@ -134,9 +144,11 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
                 right *= 4
                 bottom *= 4
     
-                image_draw_frame.rectangle([left, top, right, bottom], width=10, outline='red') # The bounding square
+                # color = f'#{_value_to_hex(time_left - time.time(), 3)}{_value_to_hex(time_left - time.time(), 3)}{_value_to_hex(time_left - time.time(), 3)}'
+                color = f'#{_value_to_hex(time_left - time.time(), 3, 255)}ff{_value_to_hex(time_left - time.time(), 3, 255)}'
+                image_draw_frame.rectangle([left, top, right, bottom], width=10, outline=color) # The bounding square
                 image_font = ImageFont.truetype('src/lib/Lexend.ttf', size=15)
-                image_draw_frame.multiline_text([left, bottom, right, bottom + 50], text=text_to_draw, font=image_font)
+                image_draw_frame.multiline_text([left, bottom, right, bottom + 50], text=text_to_draw, font=image_font, fill=color)
 
 
             
