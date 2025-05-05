@@ -5,7 +5,7 @@ from tkinter import ttk
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
 
-from lib.db_interface import pull_from_db
+from lib.db_interface import pull_from_db, Tables
 
 # Font Default
 def set_font(size, weight):
@@ -114,7 +114,7 @@ def display_list(main_frame):
     for row in tree.get_children():
       tree.delete(row)
     
-    rows = pull_from_db()
+    rows = pull_from_db(Tables.REGISTERED_STUDENTS)
     # print(rows)
     for row in rows:
       tree.insert("", "end", values=row)

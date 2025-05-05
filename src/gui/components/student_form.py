@@ -1,47 +1,15 @@
 import os, sys
 import tkinter as tk
 import customtkinter as ctk
-from tkinter import ttk, filedialog
-import tkinter.font as tkFont
-
-from lib import db_interface
-from PIL import ImageTk, Image, ImageDraw, ImageFont
+from tkinter import ttk
+from PIL import ImageTk
 import threading
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
 
-from lib.main_recognition import start_face_recognition
-from lib.db_interface import insert_into_db, Courses, ColumnFilters
-from lib.img_manip import frame_to_bytes
-
-class Student:
-  def __init__(self):
-    self.id : int = None
-    self.name : str = None
-    self.course : Courses = None
-    self.year : int = None
-    self.temp_frame = None
-    self.label_indicator : tk.Label = None
-    self.register_button : ctk.CTkButton
-    self.date_time = None
-
-  def submit_student(self):
-    insert_into_db(
-      id=self.id,
-      name=self.name,
-      image_array=frame_to_bytes(self.temp_frame, self.id),
-      course=self.course,
-      year=self.year
-    )
-
-  def set_temp_frame(self, frame):
-      self.register_button.configure(border_color="#474747")
-      self.label_indicator.configure(text="Face registered! ✔")
-      self.temp_frame = frame
-
-  def set_date_time(self, date_time):
-      self.date_time = date_time
+from lib.main_recognition import start_face_recognition, Student
+from lib.db_interface import Courses, Tables
 
 student = Student()
 
@@ -56,30 +24,12 @@ def update_label_image(dest_label : tk.Label, src_image):
     tk_image = ImageTk.PhotoImage(src_image)
     dest_label.configure(image=tk_image)
     dest_label.image = tk_image
-    
-
-def retrieve_db_data():
-    records = db_interface.pull_from_db()
-
-    known_face_ids = []
-    known_face_names = []
-    known_face_encodings = []
-    known_face_courses = []
-    known_face_years = []
-    known_records = [known_face_ids, known_face_names, known_face_encodings, known_face_courses, known_face_years]
-
-    # We take the records list of type list[tuple] returned from db_interface.pull_from_db() and supply the known_records' lists with those records.
-    for record in records:
-        # record = (id, name, face_encodings, course, year)
-        for known_record, column in zip(known_records, record):
-            known_record.append(column)
-
-    return known_records
 
 def open_register_window(master):
     
     recog_window = tk.Toplevel(master)
     recog_window.title('Register New Student')
+    recog_window.resizable(False, False)
     
     image_label = tk.Label(recog_window)
     image_label.pack()
@@ -152,7 +102,7 @@ def display_form(main_frame):
     print("Student Year: ", student.year)
     print("Student Image: ", student.temp_frame)
 
-    student.submit_student()
+    student.submit_student(Tables.REGISTERED_STUDENTS)
   
     lname_entry.delete(0, "end")
     fname_entry.delete(0, "end")

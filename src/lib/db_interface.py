@@ -24,6 +24,10 @@ class Courses:
     BSOA = 'BSOA'
     BSBA = 'BSBA'
 
+class Tables:
+    REGISTERED_STUDENTS = 'registered_students'
+    ATTENDANCE = 'attendance'
+
 if not path.exists(db_path):
     print('Database file doesn\'t exist, creating it now.')
     open(db_path, 'w')
@@ -59,7 +63,7 @@ con = sqlite3.connect(db_path, check_same_thread=False)
 cur = con.cursor()
 
 
-def insert_into_db(id : int, name : str, image_array, course : str, year : int) -> None:
+def insert_into_db(table : Tables, id : int | None = None, name : str | None = None, image_array : None=None, course : str | None=None, year : int | None=None, date : str | None=None, time : str | None=None) -> None:
     """
     Inserts passed arguments as values in a new record into the database
 
@@ -67,19 +71,30 @@ def insert_into_db(id : int, name : str, image_array, course : str, year : int) 
     :param id: The new record's ID i.e. student ID
     :param name: The new record's name i.e. "Chanz Jryko"
     """
-    data_to_db = [
-        id,
-        name,
-        image_array,
-        course,
-        year
-    ]
     
-    cur.execute("INSERT INTO registered_students VALUES(?, ?, ?, ?, ?)", data_to_db)
+    if table == Tables.REGISTERED_STUDENTS:
+        data_to_db = [
+            id,
+            name,
+            image_array,
+            course,
+            year
+        ]
+        cur.execute(f"INSERT INTO {table} VALUES(?, ?, ?, ?, ?)", data_to_db)
+        
+    else:
+        data_to_db = [
+            date,
+            time,
+            id
+        ]
+        cur.execute(f"INSERT INTO {table} VALUES(?, ?, ?)", data_to_db)
+
+    
 
     con.commit()
 
-def pull_from_db(values : tuple[ColumnFilters] | None = '*', filter : tuple[ColumnFilters, any] | None = '') -> list[tuple]:
+def pull_from_db(table : Tables, values : tuple[ColumnFilters] | None = '*', filter : tuple[ColumnFilters, any] | None = '') -> list[tuple]:
     """
     Queries the database.
 
@@ -97,7 +112,7 @@ def pull_from_db(values : tuple[ColumnFilters] | None = '*', filter : tuple[Colu
     if values != '*':
         values = ', '.join(values)
         
-    query = f"SELECT {values} FROM registered_students{filter}"
+    query = f"SELECT {values} FROM {table}{filter}"
     print(query)
 
     res = cur.execute(query)
