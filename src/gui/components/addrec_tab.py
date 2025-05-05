@@ -90,50 +90,64 @@ def addrec_tab(main_frame):
   Minimize below method to proceed to widgets
   Method to save entries to database
   """
+  def reset_validation():
+    for entry in [fname_entry, mi_entry, lname_entry, stid_entry]:
+      entry.configure(border_width=0)
+    for btns in [course_btns, year_btns]:
+      for btn in btns:
+        btn.configure(border_color="#adadad")
+    cam_btn.configure(border_width=0)
+
   def add_student():
     # Populat the student object with the entries ======================
     global student
     student.id = stid_entry.get().strip()
     
-    lname = lname_entry.get().strip()
     fname = fname_entry.get().strip()
     mi = mi_entry.get().strip()
+    lname = lname_entry.get().strip()
     student.name = f"{lname}, {fname} {mi}."
     
     student.course = course_var.get().strip()
     student.year = year_var.get().strip()
 
-    if mi and (len(mi) != 1 or not mi.isalpha()):
-      mi_entry.configure(
-        border_width=2,
-        border_color="red"
-      )
-      mi_entry.delete(0, "end")
-      print("Single letter or blank only")
-      return
-    else:
-      mi_entry.configure(
-        border_width=0,
-        border_color="#adadad"
-      )
+    # Validation Checker
+    # Reset previous invalid entries back to their OG form first
+    reset_validation()
+    #Checks for any invalid or empty entries
+    if not student.id or not student.name or not student.course or not student.year or student.temp_frame is None:
+      if mi and (len(mi) != 1 or not mi.isalpha()):
+        mi_entry.configure(
+          border_width=2,
+          border_color="red"
+        )
+        print("Single letter or blank only")
+      if not fname:
+        fname_entry.configure(border_width=2,  border_color="red")
+      if not lname:
+        lname_entry.configure(border_width=2,  border_color="red")
+      if not student.id:
+        stid_entry.configure(border_width=2,  border_color="red")
+      if not student.course:
+        for btn in course_btns:
+            btn.configure(
+              border_color="red"
+            )
+      if not student.year:
+        for btn in year_btns:
+            btn.configure(
+              border_color="red"
+            )
+      if student.temp_frame is None:
+        cam_btn.configure(border_width=2,  border_color="red")
 
-    # if not student.id:
-    #    stid_entry.configure(borderwidth=2, border_color="red")
-    # if not student.course:
-    #    stid_entry.configure(borderwidth=2, border_color="red")
+      return
 
     print("Student ID: ", student.id)
     print("Student Name: ", student.name)
     print("Student Course: ", student.course)
     print("Student Year: ", student.year)
     print("Student Image: ", student.temp_frame)
-
-    # Use student.temp_frame and not student.image_array to check if the user successfully registered their face.
-    # Because student.image_array is not set until the user clicks the register button.
-    if not student.id or not student.name or not student.course or not student.year or student.temp_frame is None:
-        print("Whoopsie! You missed a spot.")
-        return
-
 
     student.submit_student()
   
@@ -221,6 +235,33 @@ def addrec_tab(main_frame):
   )
   lname_entry.place(relx=0.075, rely=0.65, relwidth=0.75, relheight=0.25)
 
+# Face Registration =========================================
+
+  # Wrapper
+  # 392x230
+  facedata_frame = ctk.CTkFrame(master=main, fg_color="#2a2a2a", corner_radius=16)
+  facedata_frame.place(relx=0.95, rely=0.065, relheight=0.3, relwidth=0.425, anchor="ne")
+  facedata_frame.propagate(False)
+
+  ctk.CTkLabel(master=facedata_frame, text="Facial Data", font=set_font(32, "bold"), text_color="#d8d8d8").place(relx=0.05, rely=0.085)
+  
+  face_registered_indicator = ctk.CTkLabel(master=facedata_frame, text="", font=set_font(20, "normal"), text_color="green")
+  face_registered_indicator.place(relx=0.2, rely=0.35)
+  student.label_indicator = face_registered_indicator
+
+  # CAMERA HERE
+  cam_btn = ctk.CTkButton(
+    master=facedata_frame,
+    text="Register Face",
+    font=set_font(28, "bold"),
+    border_width=2,
+    corner_radius=12,
+    fg_color="transparent",
+    border_color="#474747",
+    command=lambda: open_register_window(facedata_frame)
+  )
+  cam_btn.place(relx=0.5, rely=0.65, relwidth=0.8, relheight=0.35, anchor="c")
+
 # Student ID ==============================
 
   # Wrapper
@@ -256,11 +297,13 @@ def addrec_tab(main_frame):
   # Variable to store
   course_var = tk.StringVar(master=button_grid)
 
-  ctk.CTkLabel(master=course_frame, text="Course", font=set_font(20, "bold"), fg_color="transparent", text_color="#d8d8d8").pack(anchor="w")
+  course_label = ctk.CTkLabel(master=course_frame, text="Course", font=set_font(20, "bold"), fg_color="transparent", text_color="#d8d8d8")
+  course_label.pack(anchor="w")
 
   # OPTIONS FOR COURSES
   courses = [ Courses.BSA, Courses.BSBA, Courses.BSCE, Courses.BSCS, Courses.BSEE, Courses.BSHM, Courses.BSIT, Courses.BSME, Courses.BSOA ]
 
+  course_btns = []
   for index, course in enumerate(courses):
     row = index // 3
     col = index % 3
@@ -271,11 +314,13 @@ def addrec_tab(main_frame):
       variable=course_var,
       value=course,
       font=set_font(20, "normal"),
+      border_color="#adadad",
       text_color="#adadad",
       hover_color="orange",
       cursor="hand2"
     )
     btn.grid(row=row, column=col, padx=[0, 120], pady=5)
+    course_btns.append(btn)
 
 # Year =================================================
 
@@ -287,47 +332,25 @@ def addrec_tab(main_frame):
   year_var = tk.StringVar(master=year_frame)
 
   # Label
-  ctk.CTkLabel(master=year_frame, text="Year", font=set_font(20, "bold"), fg_color="transparent", text_color="#d8d8d8").pack(anchor="w")
+  year_label = ctk.CTkLabel(master=year_frame, text="Year", font=set_font(20, "bold"), fg_color="transparent", text_color="#d8d8d8")
+  year_label.pack(anchor="w")
 
   # OPTIONS FOR YEARS
+  year_btns = []
   for year in ["1", "2", "3", "4"]:
-    ctk.CTkRadioButton(
+    btn = ctk.CTkRadioButton(
       master=year_frame,
       text=year,
       variable=year_var,
       value=year,
       font=set_font(20, "normal"),
+      border_color="#adadad",
       text_color="#adadad",
       hover_color="orange",
       cursor="hand2"
-    ).pack(side="left", padx=[20, 0])
-
-# Face Registration =========================================
-
-  # Wrapper
-  # 392x230
-  facedata_frame = ctk.CTkFrame(master=main, fg_color="#2a2a2a", corner_radius=16)
-  facedata_frame.place(relx=0.95, rely=0.065, relheight=0.3, relwidth=0.425, anchor="ne")
-  facedata_frame.propagate(False)
-
-  ctk.CTkLabel(master=facedata_frame, text="Facial Data", font=set_font(32, "bold"), text_color="#d8d8d8").place(relx=0.05, rely=0.085)
-  
-  face_registered_indicator = ctk.CTkLabel(master=facedata_frame, text="", font=set_font(20, "normal"), text_color="green")
-  face_registered_indicator.place(relx=0.2, rely=0.35)
-  student.label_indicator = face_registered_indicator
-
-  # CAMERA HERE
-  cam_btn = ctk.CTkButton(
-    master=facedata_frame,
-    text="Register Face",
-    font=set_font(28, "bold"),
-    border_width=2,
-    corner_radius=12,
-    fg_color="transparent",
-    border_color="#474747",
-    command=lambda: open_register_window(facedata_frame)
-  )
-  cam_btn.place(relx=0.5, rely=0.65, relwidth=0.8, relheight=0.35, anchor="c")
+    )
+    btn.pack(side="left", padx=[20, 0])
+    year_btns.append(btn)
 
 # Submit ===========================================
 
