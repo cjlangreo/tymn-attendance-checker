@@ -1,9 +1,8 @@
 import face_recognition
 import cv2
 import time
-from lib import db_interface
-from lib.db_interface import ColumnFilters
-from lib.img_manip import TEMP_IMAGE_PATH
+from lib.db_interface import ColumnFilters, Courses, insert_into_db, Tables, pull_from_db
+from lib.img_manip import TEMP_IMAGE_PATH, frame_to_bytes
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 import tkinter
 import numpy as np
@@ -11,18 +10,57 @@ import os
 
 video_capture = cv2.VideoCapture(0)
 
-def _value_to_hex(value, max, multiplier) -> float:
+class Student:
+    def __init__(self):
+        self.id : int = None
+        self.name : str = None
+        self.course : Courses = None
+        self.year : int = None
+        self.temp_frame = None
+        self.label_indicator = None
+        self.date = None
+        self.time = None
+
+    def submit_student(self, table : Tables):
+        if table == Tables.REGISTERED_STUDENTS:
+            insert_into_db(
+                table=table,
+                id=self.id,
+                name=self.name,
+                image_array=frame_to_bytes(self.temp_frame, self.id),
+                course=self.course,
+                year=self.year
+            )
+        elif table == Tables.ATTENDANCE:
+            self.set_date_time()
+            insert_into_db(
+                table=table,
+                date=self.date,
+                time=self.time,
+                id=self.id
+            )
+
+    def set_temp_frame(self, frame):
+      self.label_indicator.configure(text="Face registered!")
+      self.temp_frame = frame
+
+    def set_date_time(self):
+        self.date = time.strftime("%Y-%m-%d")
+        self.time = time.strftime("%H:%M:%S")
+
+
+def _value_to_hex(value, max, multiplier, reverse : bool = False) -> float:
     if value > max:
         value =  max
+
+    if reverse:
+        value = max - value
 
     hex_value = int((value / max) * multiplier)
     return f'{hex_value:02x}'
 
-
-
-
 def get_known_records():
-    records = db_interface.pull_from_db(values=(ColumnFilters.ID, ColumnFilters.NAME, ColumnFilters.COURSE, ColumnFilters.YEAR)) # [(id, name, course, year), (...)}
+    records = pull_from_db(table=Tables.REGISTERED_STUDENTS, values=(ColumnFilters.ID, ColumnFilters.NAME, ColumnFilters.COURSE, ColumnFilters.YEAR)) # [(id, name, course, year), (...)}
     
     known_id = []
     known_name = []
@@ -55,13 +93,12 @@ def update_label_image(dest_label : tkinter.Label, src_image):
     dest_label.image = tk_image
 
 
-def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.Toplevel, mode : str, student : any):
+def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.Toplevel, mode : str, student : Student):
     known_ids, known_names, known_courses, known_years, known_face_encodings = get_known_records() # [(id, name, course, year, face_encoding), (...)]
     known_face_encodings = np.array(known_face_encodings)
     process_this_frame : bool = True
     prev_name = ''
-    start_time = time.time()
-    time_left = start_time + 3
+    time_left = time.time() + 3
     text_to_draw = ''
 
     face_location = []
@@ -109,31 +146,38 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
                 pass
 
             prev_name = name
-            
-
-
+        
             print('Time left:', time_left - time.time())
-            match mode:
-                case 'r':
-                    print(face_location)
-                    print(name)
-                    print(prev_name)
-                    if (name == prev_name) and (name == "Unknown") and (face_location != []):
-                        print('Face detected')
-                    else:
-                        start_time = time.time()
-                        time_left = start_time + 3
-                        
-                    if time.time() > time_left:
-                        if face_location != []:
-                            print('Time is up')
-                            student.set_temp_frame(cropped_frame)
-                            master_window.destroy()
-                            break
-                # case 'a':
-                    # if (name == prev_name) and (name != "Unknown") and (face_location != []):
-                        # 
+            print(face_location)
+            print(name)
+            print(prev_name)
 
+            color = 'white'
+
+            if mode == 'r':
+                color = f'#ff{_value_to_hex(time_left - time.time(), 3, 255, True)}{_value_to_hex(time_left - time.time(), 3, 255, True)}'
+            elif mode == 'a':
+                if name == 'Unknown':
+                    color = 'red'
+                color = f'#{_value_to_hex(time_left - time.time(), 3, 255)}ff{_value_to_hex(time_left - time.time(), 3, 255)}'
+
+
+            if (name == prev_name) and (face_location != []):
+                if mode == 'r' and name == 'Unknown':
+                    if (time.time() > time_left):
+                        student.set_temp_frame(cropped_frame)
+                        master_window.destroy()
+                        break
+                elif mode == 'a' and name != 'Unknown':
+                    if (time.time() > time_left):
+                        student.id = id
+                        student.submit_student(Tables.ATTENDANCE)
+                        master_window.destroy()
+                        break
+                else:
+                    time_left = time.time() + 3
+            else:
+                time_left = time.time() + 3
                         
             text_to_draw = f"Name: {name}\nID: {id}\nCourse: {course}\nYear: {year}"
 
@@ -145,7 +189,6 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
                 bottom *= 4
     
                 # color = f'#{_value_to_hex(time_left - time.time(), 3)}{_value_to_hex(time_left - time.time(), 3)}{_value_to_hex(time_left - time.time(), 3)}'
-                color = f'#{_value_to_hex(time_left - time.time(), 3, 255)}ff{_value_to_hex(time_left - time.time(), 3, 255)}'
                 image_draw_frame.rectangle([left, top, right, bottom], width=10, outline=color) # The bounding square
                 image_font = ImageFont.truetype('src/lib/Lexend.ttf', size=15)
                 image_draw_frame.multiline_text([left, bottom, right, bottom + 50], text=text_to_draw, font=image_font, fill=color)
