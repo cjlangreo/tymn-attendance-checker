@@ -114,7 +114,7 @@ def display_list(main_frame):
     for row in tree.get_children():
       tree.delete(row)
     
-    rows = pull_from_db(Tables.REGISTERED_STUDENTS)
+    rows = pull_from_db((Tables.REGISTERED_STUDENTS, ))
     # print(rows)
     for row in rows:
       tree.insert("", "end", values=row)

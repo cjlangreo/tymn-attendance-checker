@@ -63,7 +63,7 @@ def _value_to_hex(value, max, multiplier, reverse : bool = False) -> float:
     return f'{hex_value:02x}'
 
 def get_known_records():
-    records = pull_from_db(table=Tables.REGISTERED_STUDENTS, values=(RegStdsColumns.ID, RegStdsColumns.NAME, RegStdsColumns.COURSE, RegStdsColumns.YEAR)) # [(id, name, course, year), (...)}
+    records = pull_from_db(table=(Tables.REGISTERED_STUDENTS, ), values=(RegStdsColumns.ID, RegStdsColumns.NAME, RegStdsColumns.COURSE, RegStdsColumns.YEAR)) # [(id, name, course, year), (...)}
     
     known_id = []
     known_name = []

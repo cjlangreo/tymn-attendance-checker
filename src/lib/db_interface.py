@@ -109,11 +109,19 @@ def pull_from_db(table : tuple[Tables], values : tuple[RegStdsColumns | Attendan
         filter (tuple[RegStdsColumns | AttendanceColumns, any): Takes a tuple of either RegStdsColumns or AttendanceColumns and a value to filter those columns with.
     """
     if filter:
-        filter = f" WHERE {filter[0]}='{filter[1]}'"
+        filter = f" WHERE {filter[0][0].split(maxsplit=1)[0]}='{filter[1]}'"
 
     if values != '*':
         values = ', '.join(values)
         
+    print(len(table))
+        
+    if len(table) == 2:
+        table = f'{table[0]} JOIN {table[1]} ON {table[0].split(maxsplit=1)[1]}.id = {table[1].split(maxsplit=1)[1]}.student'    
+    else:
+        table = ', '.join(table)
+        
+    
     query = f"SELECT {values} FROM {table}{filter}"
     print(query)
 

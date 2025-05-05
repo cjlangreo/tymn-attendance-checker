@@ -8,7 +8,7 @@ from lib.db_interface import pull_from_db, RegStdsColumns, Tables
 
 # Create the temp folder and load all images
 create_temp_folder()
-records = pull_from_db(table=Tables.REGISTERED_STUDENTS, values=(RegStdsColumns.ID, RegStdsColumns.IMAGE_ARRAY))
+records = pull_from_db(table=(Tables.REGISTERED_STUDENTS, ), values=(RegStdsColumns.ID, RegStdsColumns.IMAGE_ARRAY))
 for record in records:
     print(record)
     bytes_to_image(record[1], record[0])
