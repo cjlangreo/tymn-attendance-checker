@@ -16,7 +16,6 @@ from lib.db_interface import pull_from_db, Tables, RegStdsColumns, AttendanceCol
 # Face Recognition =======================
 student = Student()
 
-
 def update_label_image(dest_label : tk.Label, src_image):
     tk_image = ImageTk.PhotoImage(src_image)
     dest_label.configure(image=tk_image)

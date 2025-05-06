@@ -9,7 +9,7 @@ import customtkinter as ctk
 import numpy as np
 import os
 
-video_capture = cv2.VideoCapture(0)
+video_capture = cv2.VideoCapture(2)
 
 class Student:
     def __init__(self):
