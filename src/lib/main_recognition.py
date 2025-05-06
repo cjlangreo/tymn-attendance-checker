@@ -144,16 +144,13 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
                     name = known_names[best_match_index]
                     course = known_courses[best_match_index]
                     year = known_years[best_match_index]
-            except Exception as e:
-                print(e)
-                pass
+            except:
+                print('No faces found')
+
 
             prev_name = name
         
             print('Time left:', time_left - time.time())
-            print(face_location)
-            print(name)
-            print(prev_name)
 
             color = 'white'
 
