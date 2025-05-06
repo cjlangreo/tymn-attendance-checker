@@ -30,15 +30,26 @@ main_frame = ctk.CTkFrame(window, fg_color="#222")
 main_frame.place(relx=0.2, relwidth=0.8, relheight=1.0)
 main_frame.propagate(False)
 
-# set_nav(nav_frame, main_frame, display_list, display_form)
+class GUIController:
+  def __init__(self, main_frame, nav_frame, display_log, display_list, display_form):
+    self.main_frame = main_frame
+    self.nav_frame = nav_frame
+    self.display_log = display_log
+    self.display_list = display_list
+    self.display_form = display_form
+    """
+    Destructure set_nav() into active and init_bar: 
+    => set_nav(x, y) where: active_fn = x, init_bar = y 
+    """
+    self.active_fn, self.init_bar = set_nav(nav_frame, main_frame, display_log, display_list, display_form)
 
-# Run the app
-"""
-Destructure set_nav() into active and init_bar: 
-  => set_nav(x, y) where: active_fn = x, init_bar = y 
-"""
-active_fn, init_bar = set_nav(nav_frame, main_frame, display_log, display_list, display_form)
+  def refresh_attendance(self):
+        self.active_fn(self.init_bar, self.display_log)
 
-active_fn(init_bar, display_log)
+controller = GUIController(main_frame, nav_frame, display_log, display_list, display_form)
+controller.refresh_attendance()
 
 window.mainloop()
+
+  
+
