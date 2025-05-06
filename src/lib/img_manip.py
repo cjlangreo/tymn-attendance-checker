@@ -45,12 +45,17 @@ def frame_to_bytes(frame, student_id: int) -> bytes:
     """
     temp_image_name = str(student_id)
     image = Image.fromarray(frame)
-    bnw_image = image.convert('L')
-    bnw_image_path = TEMP_IMAGE_PATH + temp_image_name + '.jpg'
-    bnw_image.save(bnw_image_path)
-
-    with open(bnw_image_path, 'rb') as file:
+    image_path = TEMP_IMAGE_PATH + temp_image_name + '.jpg'
+    image.save(image_path)
+    with open(image_path, 'rb') as file:
         image_byte_array = file.read()
+    
+    # bnw_image = image.convert('L')
+    # bnw_image_path = TEMP_IMAGE_PATH + temp_image_name + '.jpg'
+    # bnw_image.save(bnw_image_path)
+
+    # with open(bnw_image_path, 'rb') as file:
+        # image_byte_array = file.read()
 
 
     return image_byte_array

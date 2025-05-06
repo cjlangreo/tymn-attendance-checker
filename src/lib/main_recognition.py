@@ -136,7 +136,7 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
             try:
                 face_location = face_recognition.face_locations(resized_frame) # Get all faces in the frame
                 face_encoding = face_recognition.face_encodings(resized_frame, face_location) # Encode those faces
-                matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=0.6)
+                matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=0.4)
                 face_distances = face_recognition.face_distance(known_face_encodings, face_encoding[0])
                 best_match_index = np.argmin(face_distances)
                 if matches[best_match_index]:
