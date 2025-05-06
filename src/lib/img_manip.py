@@ -6,6 +6,7 @@ import tempfile
 from os import mkdir
 from shutil import rmtree
 import time
+import os
 
 TEMP_IMAGE_PATH = '/tmp/face_recognition/'
 
@@ -59,3 +60,5 @@ def bytes_to_image(byte_array : bytes, student_id : int) -> str:
     temp_image_path = TEMP_IMAGE_PATH + temp_image_name + '.jpg'
     with open(temp_image_path, 'wb') as file:
         file.write(byte_array)
+    
+    return temp_image_path

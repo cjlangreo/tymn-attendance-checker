@@ -10,7 +10,7 @@ from lib.db_interface import pull_from_db, RegStdsColumns, Tables
 create_temp_folder()
 records = pull_from_db(table=(Tables.REGISTERED_STUDENTS, ), values=(RegStdsColumns.ID, RegStdsColumns.IMAGE_ARRAY))
 for record in records:
-    print(record)
+    # print(record)
     bytes_to_image(record[1], record[0])
 
 # Create a window

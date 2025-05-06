@@ -11,6 +11,8 @@ from lib.main_recognition import start_face_recognition, Student
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
 
+from lib.db_interface import pull_from_db, Tables, RegStdsColumns, AttendanceColumns
+
 # Face Recognition =======================
 student = Student()
 
@@ -126,14 +128,14 @@ def display_log(main_frame):
   scan_btn.place(relx=1, rely=0.35, anchor="e")
 
   # Display Database
-  # def show_records():
-  #   for row in tree.get_children():
-  #     tree.delete(row)
+  def show_records():
+    for row in tree.get_children():
+      tree.delete(row)
     
-  #   rows = pull_from_db()
-  #   # print(rows)
-  #   for row in rows:
-  #     tree.insert("", "end", values=row)
+    rows = pull_from_db(table=(Tables.REGISTERED_STUDENTS, Tables.ATTENDANCE), values=(RegStdsColumns.NAME, AttendanceColumns.TIME, AttendanceColumns.DATE))
+    # print(rows)
+    for row in rows:
+      tree.insert("", "end", values=row)
 
-  # show_records()
+  show_records()
 

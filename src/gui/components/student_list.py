@@ -5,13 +5,38 @@ from tkinter import ttk
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
 
-from lib.db_interface import pull_from_db, Tables
+from lib.db_interface import pull_from_db, Tables, RegStdsColumns
+from lib.img_manip import bytes_to_image
 
 # Font Default
 def set_font(size, weight):
   return ctk.CTkFont(family="Ubuntu", size=size, weight=weight)
 
 def display_list(main_frame):
+
+  def relative_width(event):
+    tree_width = tree.winfo_width()
+
+    tree.column("ID", width=int(tree_width * 0.1), anchor="center")
+    tree.column("Name", width=int(tree_width * 0.35))
+    tree.column("Course", width=int(tree_width * 0.15))
+    tree.column("Year", width=int(tree_width * 0.15))
+    tree.column("Image", width=int(tree_width * 0.2))
+
+  def view_image(event):
+    item = tree.identify_row(event.y)
+    column = tree.identify_column(event.x)
+    
+
+    if column =="#5" and item:
+      values = tree.item(item, "values")
+      if values:
+        student_id = int(values[0])
+        img_data = img_array_map.get(student_id)
+        if img_data:
+          img_path = bytes_to_image(img_data, student_id)
+          os.system(f"xdg-open '{img_path}'")
+
   main = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"))
   main.propagate(False)
   main.place(relx=0.5, rely=0.5, relwidth=0.9, relheight=0.9, anchor="c")
@@ -25,23 +50,15 @@ def display_list(main_frame):
   table_frame.place(relx=0.5, rely=0.5, relwidth=0.95, relheight=0.92, anchor="c")
 
   # Treeview
-  def relative_width(event):
-    tree_width = tree.winfo_width()
-
-    tree.column("ID", width=int(tree_width * 0.1), anchor="center")
-    tree.column("Name", width=int(tree_width * 0.35))
-    tree.column("Image", width=int(tree_width * 0.2))
-    tree.column("Course", width=int(tree_width * 0.15))
-    tree.column("Year", width=int(tree_width * 0.15))
-
-  tree = ttk.Treeview(table_frame, columns=("ID", "Name", "Image", "Course", "Year"), show="headings")
+  tree = ttk.Treeview(table_frame, columns=("ID", "Name", "Course", "Year", "Image"), show="headings")
   tree.heading("ID", text="ID")
   tree.heading("Name", text="Name", anchor="w")
-  tree.heading("Image", text="Image", anchor="w")
   tree.heading("Course", text="Course", anchor="w")
   tree.heading("Year", text="Year", anchor="w")
+  tree.heading("Image", text="Image", anchor="w")
 
   tree.bind("<Configure>", relative_width)
+  tree.bind("<Button-1>", view_image)
 
   # Scrollbar
   scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=tree.yview)
@@ -64,8 +81,8 @@ def display_list(main_frame):
   
   style.map(
     "Treeview",
-    background=[("selected", "#E36A00")],
-    foreground=[("selected", "#d8d8d8")]
+    background=[("selected", "#2a2a2a")],
+    foreground=[("selected", "#adadad")]
   )
 
   # Tree Heading Styling
@@ -109,14 +126,23 @@ def display_list(main_frame):
   )
   scrollbar.place(relx=0.9585, rely=0.075, relheight=0.875)
 
+  img_array_map = {}
   # Display Database
   def show_records():
     for row in tree.get_children():
       tree.delete(row)
     
-    rows = pull_from_db((Tables.REGISTERED_STUDENTS, ))
+    rows = pull_from_db(table=(Tables.REGISTERED_STUDENTS, ), values=(RegStdsColumns.ID, RegStdsColumns.NAME, RegStdsColumns.COURSE, RegStdsColumns.YEAR, RegStdsColumns.IMAGE_ARRAY))
     # print(rows)
     for row in rows:
-      tree.insert("", "end", values=row)
+      """
+      img_array - variable where array data is stored
+      row[:4] - sets cell value from index 0 to 3 (not including index 4 because it's then replaced by "View" text)
+      """
+      img_array = row[4]
+      masked_row = row[:4] + ("View", )
+      tree.insert("", "end", values=masked_row)
+
+      img_array_map[row[0]] = img_array
 
   show_records()
