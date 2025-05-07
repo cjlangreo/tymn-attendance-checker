@@ -1,4 +1,22 @@
 import customtkinter as ctk
+from components import palette
+
+class TabButton(ctk.CTkButton):
+  def __init__(self, master, text, command, **kwargs):
+    super().__init__(
+      master,
+      text=text,
+      command=command,
+      font=set_font(16, "bold"),
+      text_color=palette.TEXT_1, 
+      fg_color="transparent",
+      hover_color=palette.PRIMARY_1,
+      border_width=0,
+      corner_radius=0,
+      height=50,
+      anchor="w",
+      **kwargs)
+
 
 # Font Default
 def set_font(size, weight):
@@ -10,7 +28,7 @@ def set_nav(nav_frame, main_frame, display_log, display_list, display_form):
   def active(bar, tab):
 
     hide_bar()
-    bar.configure(fg_color="#E36A00")
+    bar.configure(fg_color=palette.TONE_1)
 
     del_tabs()
     tab(main_frame)
@@ -25,59 +43,26 @@ def set_nav(nav_frame, main_frame, display_log, display_list, display_form):
     for tab in main_frame.winfo_children():
       tab.destroy()
   
-  # Nav Buttons
-  attendance_btn = ctk.CTkButton(
-    master=nav_frame, 
-    text="Attendance Sheet", 
-    font=set_font(16, "bold"),
-    text_color="#d8d8d8", 
-    fg_color="transparent",
-    hover_color="#1a1a1a",
-    border_width=0,
-    height=50,
-    anchor="w",
-    command=lambda: active(attendance_bar, display_log)
-  )
-  attendance_btn.place(x=30, y=50, relwidth=1.0)
 
-  records_btn = ctk.CTkButton(
-    master=nav_frame, 
-    text="Student Records", 
-    font=set_font(16, "bold"),
-    height=50,
-    text_color="#d8d8d8", 
-    fg_color="transparent",
-    hover_color="#1a1a1a",
-    border_width=0,
-    anchor="w",
-    command=lambda: active(records_bar, display_list)
-  )
-  records_btn.place(x=30, y=100, relwidth=1.0)
+  attendance_btn = TabButton(master=nav_frame, text="          Attendance Logs", command=lambda: active(attendance_bar, display_log))
+  attendance_btn.place(x=0, y=50, relwidth=1.0)
 
-  addrecds_btn = ctk.CTkButton(
-    master=nav_frame, 
-    text="Add Student Record", 
-    font=set_font(16, "bold"),
-    text_color="#d8d8d8", 
-    fg_color="transparent",
-    hover_color="#1a1a1a",
-    border_width=0,
-    height=50,
-    anchor="w",
-    command=lambda: active(addrec_bar, display_form)
-  )
-  addrecds_btn.place(x=30, y=150, relwidth=1.0)
+  list_btn = TabButton(master=nav_frame, text="          Student List", command=lambda: active(records_bar, display_list))
+  list_btn.place(x=0, y=100, relwidth=1.0)
+
+  add_btn = TabButton(master=nav_frame, text="          Add Student Data", command=lambda: active(addrec_bar, display_form))
+  add_btn.place(x=0, y=150, relwidth=1.0)
 
   # Active Button Bar
   global attendance_bar, records_bar, addrec_bar
 
-  attendance_bar = ctk.CTkLabel(master=nav_frame, text="", fg_color="#1a1a1a", width=10, height=50)
-  attendance_bar.place(x=2, y=50)
+  attendance_bar = ctk.CTkLabel(master=nav_frame, text="", width=10, height=50)
+  attendance_bar.place(x=0, y=50)
 
-  records_bar = ctk.CTkLabel(master=nav_frame, text="", fg_color="#1a1a1a", width=10, height=50)
-  records_bar.place(x=2, y=100, )
+  records_bar = ctk.CTkLabel(master=nav_frame, text="", width=10, height=50)
+  records_bar.place(x=0, y=100, )
 
-  addrec_bar = ctk.CTkLabel(master=nav_frame, text="", fg_color="#1a1a1a", width=10, height=50)
-  addrec_bar.place(x=2, y=150)
+  addrec_bar = ctk.CTkLabel(master=nav_frame, text="", width=10, height=50)
+  addrec_bar.place(x=0, y=150)
 
   return active, attendance_bar

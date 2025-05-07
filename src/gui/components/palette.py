@@ -1,0 +1,8 @@
+TEXT_1 = "#f2f4f6"
+TEXT_2 = "#1a1a1a"
+TONE_1 = "#74be76"
+TONE_2 = "#84c585"
+PRIMARY_1 = "#121212"
+PRIMARY_2 = "#282828"
+PRIMARY_3 = "#3f3f3f"
+PRIMARY_4 = "#575757"

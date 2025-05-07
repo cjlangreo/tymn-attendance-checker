@@ -1,7 +1,7 @@
 import os, sys
 import customtkinter as ctk
 from tkinter import ttk
-
+from components import palette
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
 
@@ -13,6 +13,9 @@ from components.student_form import PersonalInfoFrame, CourseFrame, StudentIDFra
 # Font Default
 def set_font(size, weight):
   return ctk.CTkFont(family="Ubuntu", size=size, weight=weight)
+
+def set_font_mono(size, weight):
+  return ctk.CTkFont(family="Ubuntu Mono", size=size, weight=weight)
 
 def display_list(main_frame):
 
@@ -46,38 +49,40 @@ def display_list(main_frame):
       if values:
 
         # Toplevel
-        edit_data = ctk.CTkToplevel(tree, fg_color="#222")
+        edit_data = ctk.CTkToplevel(tree, fg_color=palette.PRIMARY_1)
         edit_data.title("Edit Student Data")
         edit_data.geometry("800x800")
         edit_data.propagate(False)
         edit_data.resizable(False, False)
 
+        ctk.CTkLabel(master=edit_data, text="Edit Student Data", font=set_font_mono(42, "bold"), text_color=palette.TEXT_1).place(x=50, y=50)
+
         # Student Info Wrapper
-        studinf_wrapper = ctk.CTkFrame(master=edit_data, fg_color="#2a2a2a", corner_radius=16)
-        studinf_wrapper.place(relx=0.055, rely=0.3, relheight=0.55, relwidth=0.895)
+        studinf_wrapper = ctk.CTkFrame(master=edit_data, fg_color=palette.PRIMARY_2, corner_radius=16)
+        studinf_wrapper.place(relx=0.055, rely=0.4, relheight=0.4, relwidth=0.895)
         studinf_wrapper.propagate(False)
         ctk.CTkLabel(master=studinf_wrapper, text="Academic Information", font=set_font(28, "bold"), text_color="#d8d8d8").place(relx=0.025, rely=0.055)
 
         # Student ID
         stid = StudentIDFrame(master=studinf_wrapper)
         stid.stid_label.configure(text="Stud. ID:")
-        stid.place(relx=0.035, rely=0.2, relwidth=0.3, relheight=0.1)
+        stid.place(relx=0.025, rely=0.3, relwidth=0.3)
         stid.stid_entry.insert(0, values[0])
         old_stdid = values[0]
 
         # Name
         persinfo = PersonalInfoFrame(master=edit_data)
-        persinfo.place(relx=0.055, rely=0.065, relheight=0.2, relwidth=0.895, anchor="nw")
+        persinfo.place(relx=0.055, rely=0.175, relheight=0.2, relwidth=0.895, anchor="nw")
         persinfo.name_entry.insert(0, values[1])
   
         # Course
         course_frame = CourseFrame(master=studinf_wrapper)
-        course_frame.place(relx=0.035, rely=0.35, relheight=0.4, relwidth=0.8)
+        course_frame.place(relx=0.5, rely=0.3, relwidth=0.3, anchor="n")
         course_frame.course_var.set(values[2])
 
         # Year
         year_frame = YearFrame(master=studinf_wrapper)
-        year_frame.place(relx=0.035, rely=0.75, relheight=0.2, relwidth=0.8)
+        year_frame.place(relx=0.975, rely=0.3, relwidth=0.3, anchor="ne")
         year_frame.year_var.set(values[3])
 
         def submit_button():
@@ -91,45 +96,47 @@ def display_list(main_frame):
         # Save Button
         submit_btn = ctk.CTkButton(
           master=edit_data,
-          text="Save",
+          text="+ Save",
           font=set_font(20, "bold"),
-          fg_color="transparent",
-          text_color="#d8d8d8",
-          border_width=1,
-          border_color="#474747",
+          fg_color=palette.TONE_1,
+          text_color=palette.TEXT_2,
+          hover_color=palette.TONE_2,
+          border_width=0,
           cursor="hand2",
           height=50,
           corner_radius=10,
           command = submit_button
         )
-        submit_btn.place(relx=0.75, rely=0.885, anchor="ne")
+        submit_btn.place(relx=0.95, rely=0.85, anchor="ne")
         
         # Delete Button
         delete_btn = ctk.CTkButton(
           master=edit_data,
-          text="Delete",
+          text="- Delete",
           font=set_font(20, "bold"),
-          fg_color="#C70000",
-          text_color="#d8d8d8",
+          fg_color=palette.PRIMARY_3,
+          text_color=palette.TEXT_1,
+          hover_color=palette.PRIMARY_4,
           border_width=0,
           cursor="hand2",
           height=50,
           corner_radius=10,
           command = delete_button
         )
-        delete_btn.place(relx=0.95, rely=0.885, anchor="ne")
+        delete_btn.place(relx=0.75, rely=0.85, anchor="ne")
 
   main = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"))
   main.propagate(False)
   main.place(relx=0.5, rely=0.5, relwidth=0.9, relheight=0.9, anchor="c")
 
+  ctk.CTkLabel(master=main, text="Student Records", font=set_font_mono(48, "bold"), text_color=palette.TEXT_1).place(x=5, y=5)
   # Table Frame (tree + scrollbar)
   table_frame = ctk.CTkFrame(
     master=main, 
-    fg_color="#2a2a2a",
+    fg_color=palette.PRIMARY_2,
     corner_radius=16,
   )
-  table_frame.place(relx=0.5, rely=0.5, relwidth=0.95, relheight=0.92, anchor="c")
+  table_frame.place(relx=0.5, rely=0.175, relwidth=0.95, relheight=0.8, anchor="n")
 
   # Treeview
   tree = ttk.Treeview(table_frame, columns=("ID", "Name", "Course", "Year", "Image", ""), show="headings")
@@ -154,8 +161,8 @@ def display_list(main_frame):
   # Tree Rows and Columns Styling
   style.configure(
     "Treeview",
-    background="#2a2a2a",
-    foround="#adadad",
+    background=palette.PRIMARY_2,
+    foreground=palette.TEXT_1,
     fieldbackground="transparent",
     font=("Ubuntu Mono", 14, "normal"),
     rowheight=50,
@@ -164,8 +171,8 @@ def display_list(main_frame):
   
   style.map(
     "Treeview",
-    background=[("selected", "#2a2a2a")],
-    foreground=[("selected", "#adadad")]
+    background=[("selected", palette.PRIMARY_2)],
+    foreground=[("selected", palette.TEXT_1)]
   )
 
   # Tree Heading Styling
@@ -175,21 +182,21 @@ def display_list(main_frame):
     relief="flat",
     borderwidth=0,
     height=50,
-    background="#1a1a1a",
-    foreground="#d8d8d8"
+    background=palette.TONE_1,
+    foreground=palette.TEXT_2
   )
 
   style.map(
     "Treeview.Heading",
-    background=[("active", "#1a1a1a")], 
-    foreground=[("active", "#d8d8d8")] 
+    background=[("active", palette.TONE_2)], 
+    foreground=[("active", palette.TEXT_2)] 
   )
 
   # Scrollbar Styling 
   style.configure(
     "Vertical.TScrollbar",
     relief="flat",
-    background="#3b3b3b",
+    background=palette.PRIMARY_3,
     arrowcolor=table_frame["bg"],
     borderwidth=0,
     troughcolor=table_frame["bg"]
@@ -197,7 +204,7 @@ def display_list(main_frame):
 
   style.map(
     "Vertical.TScrollbar",
-    background=[("active", "#E36A00"), ("!active", "#3b3b3b")]
+    background=[("active", palette.TONE_1), ("!active", palette.PRIMARY_3)]
   )
 
   # Pack scrollbar and tree
@@ -207,7 +214,7 @@ def display_list(main_frame):
     fill="y",
     pady=20,
   )
-  scrollbar.place(relx=0.9585, rely=0.075, relheight=0.875)
+  scrollbar.place(relx=0.96, rely=0.035, relheight=0.9)
 
   img_array_map = {}
   # Display Database

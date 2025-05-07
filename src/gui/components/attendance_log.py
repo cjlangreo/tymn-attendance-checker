@@ -5,6 +5,7 @@ from tkinter import ttk
 import datetime as dt
 import threading
 import tkinter as tk
+from components import palette
 from PIL import ImageTk
 from lib.main_recognition import start_face_recognition, Student
 
@@ -37,17 +38,30 @@ def open_register_window(master):
 def set_font(size, weight):
   return ctk.CTkFont(family="Ubuntu", size=size, weight=weight)
 
+def set_font_mono(size, weight):
+  return ctk.CTkFont(family="Ubuntu Mono", size=size, weight=weight)
+
 def display_log(main_frame):
   main = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"))
   main.propagate(False)
   main.place(relx=0.5, rely=0.5, relwidth=0.9, relheight=0.9, anchor="c")
 
-  # Clock ========================================
-  date = ctk.CTkLabel(master=main, text=f"{dt.datetime.now():%A, %B %d, %Y}", font=set_font(24, "bold"))
-  date.place(relx=1, rely=0.1, anchor="e")
+  # Header =======================================
+  ctk.CTkLabel(
+     master=main, 
+     text="Attendance",
+     font=set_font_mono(48, "bold"),
+     text_color=palette.TEXT_1
+    ).place(relx=0.85, rely=0.1, anchor="c")
 
-  time = ctk.CTkLabel(master=main, font=set_font(48, "bold"))
-  time.place(relx=0.965, rely=0.18, anchor="e")
+  # Clock ========================================
+  day = ctk.CTkLabel(master=main, text=f"{dt.datetime.now():%A}", font=set_font(24, "bold"))
+  day.place(relx=0.85, rely=0.25, anchor="c")
+  date = ctk.CTkLabel(master=main, text=f"{dt.datetime.now():%B %d, %Y}", font=set_font(24, "bold"))
+  date.place(relx=0.85, rely=0.3, anchor="c")
+
+  time = ctk.CTkLabel(master=main, font=set_font(32, "bold"))
+  time.place(relx=0.85, rely=0.4, anchor="c")
 
   def clock():
     datetime = dt.datetime.now() 
@@ -57,10 +71,25 @@ def display_log(main_frame):
 
   clock()
 
+  # Scan Button ================================
+  scan_btn = ctk.CTkButton(
+    master=main,
+    text="Scan",
+    font=set_font(28, "bold"),
+    fg_color=palette.TONE_2,
+    text_color=palette.TEXT_2,
+    border_width=0,
+    cursor="hand2",
+    height=75,
+    width=256,
+    corner_radius=16,
+    command=lambda : open_register_window(main_frame)
+  )
+  scan_btn.place(relx=0.85, rely=0.6, anchor="c")
   # Table =========================================
   table_frame = ctk.CTkFrame(
     master=main, 
-    fg_color="#2a2a2a",
+    fg_color=palette.PRIMARY_2,
     corner_radius=16,
   )
   table_frame.place(relx=0, rely=0.5, relwidth=0.67, relheight=0.95, anchor="w")
@@ -70,23 +99,28 @@ def display_log(main_frame):
   def relative_width(event):
     tree_width = tree.winfo_width()
 
-    tree.column("Name", width=int(tree_width * 0.4))
-    tree.column("Time", width=int(tree_width * 0.3), anchor="c")
-    tree.column("Date", width=int(tree_width * 0.3), anchor="c")
+    tree.column("Name", width=int(tree_width * 0.4), stretch=False)
+    tree.column("Time", width=int(tree_width * 0.3), stretch=False, anchor="c")
+    tree.column("Date", width=int(tree_width * 0.3), stretch=False, anchor="c")
+
+  def block_header_drag(event):
+    if tree.identify_region(event.x, event.y) == "separator":
+        return "break"
 
   tree.heading("Name", text="Name")
   tree.heading("Time", text="Time")
   tree.heading("Date", text="Date")
 
   tree.bind("<Configure>", relative_width)
+  tree.bind("<Button-1>", block_header_drag, add="+")
 
   style = ttk.Style()
-  style.theme_use("default")
+  style.theme_use("clam")
 
   style.configure(
     "Treeview",
-    background="#2a2a2a",
-    foreground="#adadad",
+    background=palette.PRIMARY_2,
+    foreground=palette.TEXT_1,
     fieldbackground="transparent",
     font=("Ubuntu Mono", 14, "normal"),
     rowheight=50,
@@ -99,8 +133,8 @@ def display_log(main_frame):
     relief="flat",
     borderwidth=0,
     height=50,
-    background="#1a1a1a",
-    foreground="#d8d8d8"
+    background=palette.TONE_1,
+    foreground=palette.TEXT_2
   )
 
   tree.pack(
@@ -109,22 +143,6 @@ def display_log(main_frame):
     fill="y",
     pady=20,
   )
-
-  scan_btn = ctk.CTkButton(
-    master=main,
-    text="Scan",
-    font=set_font(28, "bold"),
-    fg_color="transparent",
-    text_color="#d8d8d8",
-    border_width=2,
-    border_color="#474747",
-    cursor="hand2",
-    height=75,
-    width=256,
-    corner_radius=16,
-    command=lambda : open_register_window(main_frame)
-  )
-  scan_btn.place(relx=1, rely=0.35, anchor="e")
 
   # Display Database
   def show_records():

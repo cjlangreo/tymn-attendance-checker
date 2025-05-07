@@ -3,6 +3,7 @@ from components.nav import set_nav
 from components.student_list import display_list
 from components.student_form import display_form
 from components.attendance_log import display_log
+import components.palette as palette
 from lib.img_manip import create_temp_folder, bytes_to_image
 from lib.db_interface import pull_from_db, RegStdsColumns, Tables
 
@@ -13,20 +14,21 @@ for record in records:
     # print(record)
     bytes_to_image(record[1], record[0])
 
+
 # Create a window
 window = ctk.CTk()
 window.title("Apprizz")
 window.geometry("1366x768")
-window.configure(fg_color="#222222")
+window.configure(fg_color=palette.PRIMARY_1)
 window.resizable(False, False)
 
 # Navigation Bar Frame
-nav_frame = ctk.CTkFrame(window, fg_color="#1a1a1a")
+nav_frame = ctk.CTkFrame(window, fg_color=palette.PRIMARY_2, corner_radius=0)
 nav_frame.place(relx = 0.0, relwidth=0.2, relheight=1.0)
 nav_frame.propagate(False)
 
 # Main Frame
-main_frame = ctk.CTkFrame(window, fg_color="#222")
+main_frame = ctk.CTkFrame(window, fg_color=palette.PRIMARY_1)
 main_frame.place(relx=0.2, relwidth=0.8, relheight=1.0)
 main_frame.propagate(False)
 
