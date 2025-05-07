@@ -77,7 +77,6 @@ def insert_into_db(table : Tables, id : int | None = None, name : str | None = N
     :param id: The new record's ID i.e. student ID
     :param name: The new record's name i.e. "Chanz Jryko"
     """
-    
     if table == Tables.REGISTERED_STUDENTS:
         data_to_db = [
             id,
@@ -86,7 +85,11 @@ def insert_into_db(table : Tables, id : int | None = None, name : str | None = N
             course,
             year
         ]
-        cur.execute(f"INSERT INTO {table} VALUES(?, ?, ?, ?, ?)", data_to_db)
+        try:
+            cur.execute(f"INSERT INTO {table} VALUES(?, ?, ?, ?, ?)", data_to_db)
+        except sqlite3.IntegrityError:
+            print('There already exists a record with that Student ID!')
+            return
         
     else:
         data_to_db = [
@@ -95,7 +98,6 @@ def insert_into_db(table : Tables, id : int | None = None, name : str | None = N
             id
         ]
         cur.execute(f"INSERT INTO {table} VALUES(?, ?, ?)", data_to_db)
-
 
 
     con.commit()
@@ -122,7 +124,7 @@ def pull_from_db(table : tuple[Tables], values : tuple[RegStdsColumns | Attendan
         table = ', '.join(table)
         
     
-    query = f"SELECT {values} FROM {table}{filter}"
+    query = f"SELECT {values} FROM {table}{filter}" 
     res = cur.execute(query)
 
     return res.fetchall()
@@ -132,7 +134,13 @@ def update_student(old_student_id : int, column_values : tuple[(RegStdsColumns, 
     registered_student_values = ', '.join(f"{col[0]} = '{col[1]}'" for col in column_values)
     registered_students_query = f'UPDATE {Tables.REGISTERED_STUDENTS} SET {registered_student_values} WHERE {RegStdsColumns.ID} = {old_student_id}'
     print(f'Registered students table query: {registered_students_query}')
-    cur.execute(registered_students_query)
+
+    try:
+        cur.execute(registered_students_query)
+    except sqlite3.IntegrityError:
+        print('There already exists a record with that Student ID!')
+        return
+        
     print('Successfully updated Registered Students Record')
 
     if column_values[0][1] != old_student_id:
@@ -146,5 +154,17 @@ def update_student(old_student_id : int, column_values : tuple[(RegStdsColumns, 
 
         rename(old_image_path, new_image_path)
         print('Successfully updated Attendance Record')
+
+    con.commit()
+
+def delete_student(student_id : int):
+    registered_students_query = f"DELETE FROM {Tables.REGISTERED_STUDENTS} WHERE {RegStdsColumns.ID} = {student_id}"
+    attendance_query = f"DELETE FROM {Tables.ATTENDANCE} WHERE {AttendanceColumns.ID} = {student_id}"
+
+    print(registered_students_query)
+    print(attendance_query)
+
+    cur.execute(attendance_query)
+    cur.execute(registered_students_query)
 
     con.commit()
