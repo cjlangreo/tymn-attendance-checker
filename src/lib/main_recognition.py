@@ -150,13 +150,15 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
 
             prev_name = name
         
-            print('Time left:', time_left - time.time())
+            print('Time left:', round(time_left - time.time(), 1))
 
             color = 'white'
 
             if mode == 'r':
                 color = f'#ff{_value_to_hex(time_left - time.time(), 3, 255, True)}{_value_to_hex(time_left - time.time(), 3, 255, True)}'
+                print('Registering new student!')
             elif mode == 'a':
+                print('Taking attendance!')
                 if name == 'Unknown':
                     color = 'red'
                 color = f'#{_value_to_hex(time_left - time.time(), 3, 255)}ff{_value_to_hex(time_left - time.time(), 3, 255)}'
