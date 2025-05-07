@@ -63,7 +63,7 @@ def display_log(main_frame):
     fg_color="#2a2a2a",
     corner_radius=16,
   )
-  table_frame.place(relx=0.33, rely=0.5, relwidth=0.67, relheight=0.95, anchor="c")
+  table_frame.place(relx=0, rely=0.5, relwidth=0.67, relheight=0.95, anchor="w")
 
   tree = ttk.Treeview(master=table_frame, columns=("Name", "Date", "Time"), show="headings")
   
@@ -71,8 +71,8 @@ def display_log(main_frame):
     tree_width = tree.winfo_width()
 
     tree.column("Name", width=int(tree_width * 0.4))
-    tree.column("Time", width=int(tree_width * 0.3))
-    tree.column("Date", width=int(tree_width * 0.3))
+    tree.column("Time", width=int(tree_width * 0.3), anchor="c")
+    tree.column("Date", width=int(tree_width * 0.3), anchor="c")
 
   tree.heading("Name", text="Name")
   tree.heading("Time", text="Time")
@@ -131,7 +131,7 @@ def display_log(main_frame):
     for row in tree.get_children():
       tree.delete(row)
     
-    rows = pull_from_db(table=(Tables.REGISTERED_STUDENTS, Tables.ATTENDANCE), values=(RegStdsColumns.NAME, AttendanceColumns.TIME, AttendanceColumns.DATE))
+    rows = pull_from_db(table=(Tables.REGISTERED_STUDENTS, Tables.ATTENDANCE), values=(RegStdsColumns.NAME, AttendanceColumns.DATE, AttendanceColumns.TIME))
     # print(rows)
     for row in rows:
       tree.insert("", "end", values=row)

@@ -17,7 +17,7 @@ for record in records:
 window = ctk.CTk()
 window.title("Apprizz")
 window.geometry("1366x768")
-window.configure(background="#222222")
+window.configure(fg_color="#222222")
 window.resizable(False, False)
 
 # Navigation Bar Frame

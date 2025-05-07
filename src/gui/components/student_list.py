@@ -24,7 +24,7 @@ def display_list(main_frame):
     tree.column("Course", width=int(tree_width * 0.15))
     tree.column("Year", width=int(tree_width * 0.15))
     tree.column("Image", width=int(tree_width * 0.1))
-    tree.column("Modify", width=int(tree_width * 0.1))
+    tree.column("", width=int(tree_width * 0.1))
 
   def data_onclick(event):
     item = tree.identify_row(event.y)
@@ -46,7 +46,7 @@ def display_list(main_frame):
       if values:
 
         # Toplevel
-        edit_data = ctk.CTkToplevel(tree)
+        edit_data = ctk.CTkToplevel(tree, fg_color="#222")
         edit_data.title("Edit Student Data")
         edit_data.geometry("800x800")
         edit_data.propagate(False)
@@ -54,7 +54,7 @@ def display_list(main_frame):
 
         # Student Info Wrapper
         studinf_wrapper = ctk.CTkFrame(master=edit_data, fg_color="#2a2a2a", corner_radius=16)
-        studinf_wrapper.place(relx=0.055, rely=0.39, relheight=0.55, relwidth=0.895)
+        studinf_wrapper.place(relx=0.055, rely=0.3, relheight=0.55, relwidth=0.895)
         studinf_wrapper.propagate(False)
         ctk.CTkLabel(master=studinf_wrapper, text="Academic Information", font=set_font(28, "bold"), text_color="#d8d8d8").place(relx=0.025, rely=0.055)
 
@@ -67,7 +67,7 @@ def display_list(main_frame):
 
         # Name
         persinfo = PersonalInfoFrame(master=edit_data)
-        persinfo.place(relx=0.055, rely=0.065, relheight=0.3, relwidth=0.45, anchor="nw")
+        persinfo.place(relx=0.055, rely=0.065, relheight=0.2, relwidth=0.895, anchor="nw")
         persinfo.name_entry.insert(0, values[1])
   
         # Course
@@ -79,28 +79,41 @@ def display_list(main_frame):
         year_frame = YearFrame(master=studinf_wrapper)
         year_frame.place(relx=0.035, rely=0.75, relheight=0.2, relwidth=0.8)
         year_frame.year_var.set(values[3])
-                
-        # Face
-        facedata_frame = FaceDataFrame(master=edit_data)
-        facedata_frame.place(relx=0.95, rely=0.065, relheight=0.3, relwidth=0.425, anchor="ne")
 
         def submit_button():
           update_student(old_stdid, ((RegStdsColumns.ID, stid.stid_entry.get()), (RegStdsColumns.NAME, persinfo.name_entry.get()), (RegStdsColumns.COURSE, course_frame.course_var.get()), (RegStdsColumns.YEAR, year_frame.year_var.get())))
           edit_data.destroy()
 
+        # Save Button
         submit_btn = ctk.CTkButton(
           master=edit_data,
-          text="Submit",
+          text="Save",
           font=set_font(20, "bold"),
-          fg_color="#E36A00",
+          fg_color="transparent",
+          text_color="#d8d8d8",
+          border_width=1,
+          border_color="#474747",
+          cursor="hand2",
+          height=50,
+          corner_radius=10,
+          command = submit_button
+        )
+        submit_btn.place(relx=0.75, rely=0.885, anchor="ne")
+        
+        # Delete Button
+        delete_btn = ctk.CTkButton(
+          master=edit_data,
+          text="Delete",
+          font=set_font(20, "bold"),
+          fg_color="#C70000",
           text_color="#d8d8d8",
           border_width=0,
           cursor="hand2",
           height=50,
-          corner_radius=25,
+          corner_radius=10,
           command = submit_button
         )
-        submit_btn.place(relx=0.5, rely=0.9)
+        delete_btn.place(relx=0.95, rely=0.885, anchor="ne")
 
   main = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"))
   main.propagate(False)
@@ -115,13 +128,13 @@ def display_list(main_frame):
   table_frame.place(relx=0.5, rely=0.5, relwidth=0.95, relheight=0.92, anchor="c")
 
   # Treeview
-  tree = ttk.Treeview(table_frame, columns=("ID", "Name", "Course", "Year", "Image", "Modify"), show="headings")
+  tree = ttk.Treeview(table_frame, columns=("ID", "Name", "Course", "Year", "Image", ""), show="headings")
   tree.heading("ID", text="ID")
   tree.heading("Name", text="Name", anchor="w")
   tree.heading("Course", text="Course", anchor="w")
   tree.heading("Year", text="Year", anchor="w")
   tree.heading("Image", text="Image", anchor="w")
-  tree.heading("Modify", text="Modify", anchor="w")
+  tree.heading("", text="", anchor="w")
 
   tree.bind("<Configure>", relative_width)
   tree.bind("<Button-1>", data_onclick)

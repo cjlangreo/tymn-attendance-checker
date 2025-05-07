@@ -75,7 +75,7 @@ class CourseFrame(ctk.CTkFrame):
 
 class StudentIDFrame(ctk.CTkFrame):
   def __init__(self, master, **kwargs):
-    super().__init__(master, **kwargs)
+    super().__init__(master, fg_color="transparent", **kwargs)
 
     self.stid_label = ctk.CTkLabel(master=self, text="Student ID:", font=set_font(20, "bold"), text_color="#d8d8d8")
     self.stid_label.place(relx=0, rely=0.5, anchor="w")
@@ -94,7 +94,7 @@ class StudentIDFrame(ctk.CTkFrame):
 
 class YearFrame(ctk.CTkFrame):
   def __init__(self, master, **kwargs):
-    super().__init__(master, **kwargs)
+    super().__init__(master, fg_color="transparent",**kwargs)
 
     self.year_var = tk.StringVar(master=self)
     self.year_label = ctk.CTkLabel(master=self, text="Year", font=set_font(20, "bold"), fg_color="transparent", text_color="#d8d8d8")
@@ -124,7 +124,7 @@ class YearFrame(ctk.CTkFrame):
 
 class FaceDataFrame(ctk.CTkFrame):
   def __init__(self, master, **kwargs):
-    super().__init__(master, fg_color="#2a2a2a", corner_radius=16)
+    super().__init__(master, fg_color="#2a2a2a", corner_radius=16, **kwargs)
     self.propagate(False)
 
     self.frame_label = ctk.CTkLabel(master=self, text="Facial Data", font=set_font(32, "bold"), text_color="#d8d8d8").place(relx=0.05, rely=0.085)
@@ -308,12 +308,13 @@ def display_form(main_frame):
     master=main,
     text="Submit",
     font=set_font(20, "bold"),
-    fg_color="#E36A00",
+    fg_color="transparent",
     text_color="#d8d8d8",
-    border_width=0,
+    border_width=2,
+    border_color="#474747",
     cursor="hand2",
     height=50,
-    corner_radius=25,
+    corner_radius=10,
     command=add_student
   )
   submit_data.place(relx=0.5, rely=0.925, anchor="center")
