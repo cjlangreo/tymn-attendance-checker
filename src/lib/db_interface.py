@@ -2,21 +2,22 @@
 Hello
 """
 import sqlite3
-from os import path
+from os import path, rename
+from lib.img_manip import TEMP_IMAGE_PATH
 
 db_path = 'src/lib/faces.db'
 
 class RegStdsColumns:
-    ID = 'rs.id'
-    NAME = 'rs.name'
-    IMAGE_ARRAY = 'rs.image_array'
-    COURSE = 'rs.course'
-    YEAR = 'rs.year'
+    ID = 'id'
+    NAME = 'name'
+    IMAGE_ARRAY = 'image_array'
+    COURSE = 'course'
+    YEAR = 'year'
 
 class AttendanceColumns:
-    DATE = 'a.date'
-    TIME = 'a.time'
-    ID = 'a.student'
+    DATE = 'date'
+    TIME = 'time'
+    ID = 'student'
 
 class Courses:
     BSCS = 'BSCS'
@@ -30,8 +31,8 @@ class Courses:
     BSBA = 'BSBA'
 
 class Tables:
-    REGISTERED_STUDENTS = 'registered_students rs'
-    ATTENDANCE = 'attendance a'
+    REGISTERED_STUDENTS = 'registered_students'
+    ATTENDANCE = 'attendance'
 
 if not path.exists(db_path):
     print('Database file doesn\'t exist, creating it now.')
@@ -85,7 +86,7 @@ def insert_into_db(table : Tables, id : int | None = None, name : str | None = N
             course,
             year
         ]
-        cur.execute(f"INSERT INTO {table.split(maxsplit=1)[0]} VALUES(?, ?, ?, ?, ?)", data_to_db)
+        cur.execute(f"INSERT INTO {table} VALUES(?, ?, ?, ?, ?)", data_to_db)
         
     else:
         data_to_db = [
@@ -93,7 +94,7 @@ def insert_into_db(table : Tables, id : int | None = None, name : str | None = N
             time,
             id
         ]
-        cur.execute(f"INSERT INTO {table.split(maxsplit=1)[0]} VALUES(?, ?, ?)", data_to_db)
+        cur.execute(f"INSERT INTO {table} VALUES(?, ?, ?)", data_to_db)
 
 
 
@@ -109,22 +110,41 @@ def pull_from_db(table : tuple[Tables], values : tuple[RegStdsColumns | Attendan
         filter (tuple[RegStdsColumns | AttendanceColumns, any): Takes a tuple of either RegStdsColumns or AttendanceColumns and a value to filter those columns with.
     """
     if filter:
-        filter = f" WHERE {filter[0][0].split(maxsplit=1)[0]}='{filter[1]}'"
+        filter = f" WHERE {filter[0][0]}='{filter[1]}'"
 
     if values != '*':
         values = ', '.join(values)
         
-    print(len(table))
         
     if len(table) == 2:
-        table = f'{table[0]} JOIN {table[1]} ON {table[0].split(maxsplit=1)[1]}.id = {table[1].split(maxsplit=1)[1]}.student'    
+        table = f'{table[0]} JOIN {table[1]} ON {table[0]}.id = {table[1]}.student'    
     else:
         table = ', '.join(table)
         
     
     query = f"SELECT {values} FROM {table}{filter}"
-    print(query)
-
     res = cur.execute(query)
 
     return res.fetchall()
+
+
+def update_student(old_student_id : int, column_values : tuple[(RegStdsColumns, any)]):
+    registered_student_values = ', '.join(f"{col[0]} = '{col[1]}'" for col in column_values)
+    registered_students_query = f'UPDATE {Tables.REGISTERED_STUDENTS} SET {registered_student_values} WHERE {RegStdsColumns.ID} = {old_student_id}'
+    print(f'Registered students table query: {registered_students_query}')
+    cur.execute(registered_students_query)
+    print('Successfully updated Registered Students Record')
+
+    if column_values[0][1] != old_student_id:
+        attendance_values = f"{AttendanceColumns.ID} = '{column_values[0][1]}'"
+        attendance_query = f'UPDATE {Tables.ATTENDANCE} SET {attendance_values} WHERE {AttendanceColumns.ID} = {old_student_id}'
+        print(f'Attendance table query: {attendance_query}')
+        cur.execute(attendance_query)
+
+        old_image_path = f"{TEMP_IMAGE_PATH}{old_student_id}.jpg"
+        new_image_path = f"{TEMP_IMAGE_PATH}{column_values[0][1]}.jpg"
+
+        rename(old_image_path, new_image_path)
+        print('Successfully updated Attendance Record')
+
+    con.commit()
