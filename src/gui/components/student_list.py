@@ -5,9 +5,10 @@ from tkinter import ttk
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
 
-from lib.db_interface import pull_from_db, Tables, RegStdsColumns
-from lib.img_manip import bytes_to_image
+from lib.db_interface import pull_from_db, Tables, RegStdsColumns, update_student
+from lib.img_manip import bytes_to_image, frame_to_bytes
 from components.student_form import PersonalInfoFrame, CourseFrame, StudentIDFrame, YearFrame, FaceDataFrame
+
 
 # Font Default
 def set_font(size, weight):
@@ -62,6 +63,7 @@ def display_list(main_frame):
         stid.stid_label.configure(text="Stud. ID:")
         stid.place(relx=0.035, rely=0.2, relwidth=0.3, relheight=0.1)
         stid.stid_entry.insert(0, values[0])
+        old_stdid = values[0]
 
         # Name
         persinfo = PersonalInfoFrame(master=edit_data)
@@ -82,6 +84,10 @@ def display_list(main_frame):
         facedata_frame = FaceDataFrame(master=edit_data)
         facedata_frame.place(relx=0.95, rely=0.065, relheight=0.3, relwidth=0.425, anchor="ne")
 
+        def submit_button():
+          update_student(old_stdid, ((RegStdsColumns.ID, stid.stid_entry.get()), (RegStdsColumns.NAME, persinfo.name_entry.get()), (RegStdsColumns.COURSE, course_frame.course_var.get()), (RegStdsColumns.YEAR, year_frame.year_var.get())))
+          edit_data.destroy()
+
         submit_btn = ctk.CTkButton(
           master=edit_data,
           text="Submit",
@@ -92,6 +98,7 @@ def display_list(main_frame):
           cursor="hand2",
           height=50,
           corner_radius=25,
+          command = submit_button
         )
         submit_btn.place(relx=0.5, rely=0.9)
 
@@ -131,7 +138,7 @@ def display_list(main_frame):
   style.configure(
     "Treeview",
     background="#2a2a2a",
-    foreground="#adadad",
+    foround="#adadad",
     fieldbackground="transparent",
     font=("Ubuntu Mono", 14, "normal"),
     rowheight=50,
