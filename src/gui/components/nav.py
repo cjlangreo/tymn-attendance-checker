@@ -1,19 +1,26 @@
+import os, sys
 import customtkinter as ctk
+from components import assets
 from components import palette
+# parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+# sys.path.append(parent_dir)
+
 
 class TabButton(ctk.CTkButton):
-  def __init__(self, master, text, command, **kwargs):
+  def __init__(self, master, text, command, image, **kwargs):
     super().__init__(
       master,
       text=text,
       command=command,
-      font=set_font(16, "bold"),
+      image=image,
+      font=set_font(20, "bold"),
       text_color=palette.TEXT_1, 
       fg_color="transparent",
       hover_color=palette.PRIMARY_1,
       border_width=0,
-      corner_radius=0,
+      corner_radius=8,
       height=50,
+      compound="left",
       anchor="w",
       **kwargs)
 
@@ -25,44 +32,43 @@ def set_font(size, weight):
 def set_nav(nav_frame, main_frame, display_log, display_list, display_form):
 
   # Active Tab
-  def active(bar, tab):
+  def active(btn, tab):
 
-    hide_bar()
-    bar.configure(fg_color=palette.TONE_1)
+    reset_text()
+    btn.configure(text_color=palette.TONE_1)
+    if btn == attendance_btn:
+      btn.configure(image=assets.calendar_tone)
+    if btn == list_btn:
+      btn.configure(image=assets.students_tone)
+    if btn == add_btn:
+      btn.configure(image=assets.add_stud_tone)
 
     del_tabs()
     tab(main_frame)
 
   # Hide Bar
-  def hide_bar():
-    attendance_bar.configure(fg_color="transparent")
-    records_bar.configure(fg_color="transparent")
-    addrec_bar.configure(fg_color="transparent")
+  def reset_text():
+    btns = [attendance_btn, list_btn, add_btn]
+
+    for btn in btns:
+      btn.configure(text_color=palette.TEXT_1)
+
+    btns[0].configure(image=assets.calendar_light)
+    btns[1].configure(image=assets.students_light)
+    btns[2].configure(image=assets.add_stud_light)
 
   def del_tabs():
     for tab in main_frame.winfo_children():
       tab.destroy()
   
 
-  attendance_btn = TabButton(master=nav_frame, text="          Attendance Logs", command=lambda: active(attendance_bar, display_log))
-  attendance_btn.place(x=0, y=50, relwidth=1.0)
+  attendance_btn = TabButton(master=nav_frame, text="  Attendance", command=lambda: active(attendance_btn, display_log), image=assets.calendar_light)
+  attendance_btn.place(relx=0.5, y=50, relwidth=0.9, anchor="c")
 
-  list_btn = TabButton(master=nav_frame, text="          Student List", command=lambda: active(records_bar, display_list))
-  list_btn.place(x=0, y=100, relwidth=1.0)
+  list_btn = TabButton(master=nav_frame, text="  Student Records", command=lambda: active(list_btn, display_list), image=assets.students_light)
+  list_btn.place(relx=0.5, y=100, relwidth=0.9, anchor="c")
 
-  add_btn = TabButton(master=nav_frame, text="          Add Student Data", command=lambda: active(addrec_bar, display_form))
-  add_btn.place(x=0, y=150, relwidth=1.0)
+  add_btn = TabButton(master=nav_frame, text="  Add Student", command=lambda: active(add_btn, display_form), image=assets.add_stud_light)
+  add_btn.place(relx=0.5, y=150, relwidth=0.9, anchor="c")
 
-  # Active Button Bar
-  global attendance_bar, records_bar, addrec_bar
-
-  attendance_bar = ctk.CTkLabel(master=nav_frame, text="", width=10, height=50)
-  attendance_bar.place(x=0, y=50)
-
-  records_bar = ctk.CTkLabel(master=nav_frame, text="", width=10, height=50)
-  records_bar.place(x=0, y=100, )
-
-  addrec_bar = ctk.CTkLabel(master=nav_frame, text="", width=10, height=50)
-  addrec_bar.place(x=0, y=150)
-
-  return active, attendance_bar
+  return active, attendance_btn
