@@ -5,8 +5,8 @@ from tkinter import ttk
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
 
-from lib.db_interface import pull_from_db, Tables, RegStdsColumns, update_student
-from lib.img_manip import bytes_to_image, frame_to_bytes
+from lib.db_interface import pull_from_db, Tables, RegStdsColumns, update_student, delete_student
+from lib.img_manip import bytes_to_image
 from components.student_form import PersonalInfoFrame, CourseFrame, StudentIDFrame, YearFrame, FaceDataFrame
 
 
@@ -84,6 +84,10 @@ def display_list(main_frame):
           update_student(old_stdid, ((RegStdsColumns.ID, stid.stid_entry.get()), (RegStdsColumns.NAME, persinfo.name_entry.get()), (RegStdsColumns.COURSE, course_frame.course_var.get()), (RegStdsColumns.YEAR, year_frame.year_var.get())))
           edit_data.destroy()
 
+        def delete_button():
+          delete_student(old_stdid)
+          edit_data.destroy()
+
         # Save Button
         submit_btn = ctk.CTkButton(
           master=edit_data,
@@ -111,7 +115,7 @@ def display_list(main_frame):
           cursor="hand2",
           height=50,
           corner_radius=10,
-          command = submit_button
+          command = delete_button
         )
         delete_btn.place(relx=0.95, rely=0.885, anchor="ne")
 
