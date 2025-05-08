@@ -5,6 +5,7 @@ from tkinter import ttk
 from PIL import ImageTk
 import threading
 from components import palette
+from components import assets
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(parent_dir)
@@ -18,7 +19,7 @@ class NameFrame(ctk.CTkFrame):
   def __init__(self, master, **kwargs):
     super().__init__(master, fg_color="transparent", corner_radius=0, **kwargs)
 
-    ctk.CTkLabel(master=self, text="Name", font=set_font(24, "bold"), text_color=palette.TEXT_1).pack(anchor="w", pady=(0, 12))
+    ctk.CTkLabel(master=self, text=" Name", font=set_font(24, "bold"), text_color=palette.TEXT_1, image=assets.name, compound="left",).pack(anchor="w", pady=(0, 12),)
 
     self.name_entry = ctk.CTkEntry(
       master=self,
@@ -39,7 +40,7 @@ class StudentIDFrame(ctk.CTkFrame):
   def __init__(self, master, **kwargs):
     super().__init__(master, fg_color="transparent", border_color=palette.PRIMARY_4, **kwargs)
 
-    self.stid_label = ctk.CTkLabel(master=self, text="Student ID", font=set_font(20, "bold"), text_color=palette.TEXT_1)
+    self.stid_label = ctk.CTkLabel(master=self, text=" Student ID", font=set_font(24, "bold"), text_color=palette.TEXT_1, image=assets.id, compound="left",)
     self.stid_label.pack(anchor="w", pady=(0, 12))
     self.stid_entry = ctk.CTkEntry(
       master=self, 
@@ -62,7 +63,7 @@ class CourseFrame(ctk.CTkFrame):
 
     self.course_var = tk.StringVar(value=Courses.BSA)
 
-    self.course_label = ctk.CTkLabel(master=self, text="Course", font=set_font(20, "bold"), fg_color="transparent", text_color=palette.TEXT_1)
+    self.course_label = ctk.CTkLabel(master=self, text=" Course", font=set_font(24, "bold"), fg_color="transparent", text_color=palette.TEXT_1, image=assets.course, compound="left",)
     self.course_label.pack(anchor="w", pady=(0,12))
 
     self.courses = [Courses.BSA, Courses.BSBA, Courses.BSCE, Courses.BSCS, Courses.BSEE, Courses.BSHM, Courses.BSIT, Courses.BSME, Courses.BSOA]
@@ -91,7 +92,7 @@ class YearFrame(ctk.CTkFrame):
     super().__init__(master, fg_color="transparent", border_color=palette.PRIMARY_4, **kwargs)
 
     self.year_var = tk.StringVar(value="1")
-    self.year_label = ctk.CTkLabel(master=self, text="Year", font=set_font(20, "bold"), fg_color="transparent", text_color=palette.TEXT_1)
+    self.year_label = ctk.CTkLabel(master=self, text=" Year", font=set_font(24, "bold"), fg_color="transparent", text_color=palette.TEXT_1, image=assets.year, compound="left",)
     self.year_label.pack(anchor="w", pady=(0, 12))
 
     self.options = ctk.CTkOptionMenu(
@@ -117,10 +118,7 @@ class FaceDataFrame(ctk.CTkFrame):
   def __init__(self, master, **kwargs):
     super().__init__(master, fg_color=palette.PRIMARY_2, **kwargs)
 
-    self.frame_label = ctk.CTkLabel(master=self, text="Facial Data", font=set_font(24, "bold"), text_color=palette.TEXT_1).pack(anchor="w", pady=(0, 12))
-    self.face_registered_indicator = ctk.CTkLabel(master=self, text="", font=set_font(8, "normal"), text_color=palette.TONE_2)
-    self.face_registered_indicator.place(rely=1, relx=1, anchor="e")
-    student.label_indicator = self.face_registered_indicator
+    self.frame_label = ctk.CTkLabel(master=self, text=" Facial Data", font=set_font(24, "bold"), text_color=palette.TEXT_1, image=assets.fingerprint, compound="left",).pack(anchor="w", pady=(0, 12))
 
     self.camera_btn = ctk.CTkButton(
       master=self,
@@ -137,6 +135,7 @@ class FaceDataFrame(ctk.CTkFrame):
     )
     self.camera_btn.pack(anchor="w")
     student.register_button = self.camera_btn
+    student.label_indicator = self.camera_btn
 
 # Font Default
 def set_font(size, weight):
@@ -208,8 +207,8 @@ def display_form(main_frame):
     course_frame.course_var.set(0)
     year_frame.year_var.set(0)
     student = Student() # We reinstantiate the student object to clear the previous entries.
-    student.label_indicator = facedata_frame.face_registered_indicator # We reassign the label indicator to the new student object.
-    facedata_frame.face_registered_indicator.configure(text="") # We clear the label indicator text.
+    student.label_indicator = facedata_frame.camera_btn # We reassign the label indicator to the new student object.
+    facedata_frame.camera_btn.configure(text="Register Face", text_color=palette.TEXT_1) # We clear the label indicator text.
 
   """
   Widgets Starts Here:

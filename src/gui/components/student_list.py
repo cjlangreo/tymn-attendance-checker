@@ -84,7 +84,7 @@ def display_list(main_frame):
         # Delete Button
         delete_btn = ctk.CTkButton(
           master=ed_wrapper,
-          text="- Delete",
+          text="Delete",
           font=set_font(20, "bold"),
           fg_color=palette.PRIMARY_3,
           text_color=palette.TEXT_1,
@@ -100,7 +100,7 @@ def display_list(main_frame):
         # Save Button
         submit_btn = ctk.CTkButton(
           master=ed_wrapper,
-          text="+ Save",
+          text="Save",
           font=set_font(20, "bold"),
           fg_color=palette.TONE_1,
           text_color=palette.TEXT_2,

@@ -29,7 +29,7 @@ class TabButton(ctk.CTkButton):
 def set_font(size, weight):
   return ctk.CTkFont(family="Ubuntu", size=size, weight=weight)
 
-def set_nav(nav_frame, main_frame, display_log, display_list, display_form):
+def set_nav(nav_frame, main_frame, display_log, display_list, display_form, display_about):
 
   # Active Tab
   def active(btn, tab):
@@ -48,7 +48,7 @@ def set_nav(nav_frame, main_frame, display_log, display_list, display_form):
 
   # Hide Bar
   def reset_text():
-    btns = [attendance_btn, list_btn, add_btn]
+    btns = [attendance_btn, list_btn, add_btn, about_btn]
 
     for btn in btns:
       btn.configure(text_color=palette.TEXT_1)
@@ -63,12 +63,14 @@ def set_nav(nav_frame, main_frame, display_log, display_list, display_form):
   
 
   attendance_btn = TabButton(master=nav_frame, text="  Attendance", command=lambda: active(attendance_btn, display_log), image=assets.calendar_light)
-  attendance_btn.place(relx=0.5, y=50, relwidth=0.9, anchor="c")
+  attendance_btn.place(relx=0.5, y=200, relwidth=0.9, anchor="c")
 
   list_btn = TabButton(master=nav_frame, text="  Student Records", command=lambda: active(list_btn, display_list), image=assets.students_light)
-  list_btn.place(relx=0.5, y=100, relwidth=0.9, anchor="c")
+  list_btn.place(relx=0.5, y=250, relwidth=0.9, anchor="c")
 
   add_btn = TabButton(master=nav_frame, text="  Add Student", command=lambda: active(add_btn, display_form), image=assets.add_stud_light)
-  add_btn.place(relx=0.5, y=150, relwidth=0.9, anchor="c")
+  add_btn.place(relx=0.5, y=300, relwidth=0.9, anchor="c")
 
+  about_btn = TabButton(master=nav_frame, text="   About Us", command=lambda: active(about_btn, display_about), image=assets.favicon)
+  about_btn.place(anchor="s", relx=0.5, rely=0.975, relwidth=0.9)
   return active, attendance_btn

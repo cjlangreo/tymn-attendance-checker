@@ -5,11 +5,12 @@ from PIL import Image, ImageDraw, ImageFont, ImageTk
 import tkinter
 import customtkinter as ctk
 import numpy as np
+from gui.components import palette
 
 from lib.db_interface import RegStdsColumns, Courses, insert_into_db, Tables, pull_from_db
 from lib.img_manip import TEMP_IMAGE_PATH, frame_to_bytes
 
-video_capture = cv2.VideoCapture(0)
+video_capture = cv2.VideoCapture(2)
 
 class Student:
     def __init__(self):
@@ -43,7 +44,7 @@ class Student:
             )
 
     def set_temp_frame(self, frame):
-      self.label_indicator.configure(text="Face registered! ✔")
+      self.label_indicator.configure(text="Face registered! ✔", text_color=palette.TONE_1,)
       self.register_button.configure(border_color="#474747")
       self.temp_frame = frame
 
