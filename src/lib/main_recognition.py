@@ -1,13 +1,13 @@
 import face_recognition
 import cv2
 import time
-from lib.db_interface import RegStdsColumns, Courses, insert_into_db, Tables, pull_from_db
-from lib.img_manip import TEMP_IMAGE_PATH, frame_to_bytes
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 import tkinter
 import customtkinter as ctk
 import numpy as np
-import os
+
+from lib.db_interface import RegStdsColumns, Courses, insert_into_db, Tables, pull_from_db
+from lib.img_manip import TEMP_IMAGE_PATH, frame_to_bytes
 
 video_capture = cv2.VideoCapture(0)
 
@@ -102,14 +102,16 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
     process_this_frame : bool = True
     prev_name = ''
     time_left = time.time() + 3
-    text_to_draw = ''
 
     face_location = []
     face_encoding = []
     matches = []
     best_match_index = None
 
+    color = 'white'
+
     while True:
+        process_this_frame = not process_this_frame
         if process_this_frame:
             frame = video_capture.read()[1]
             rotated_frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
@@ -126,7 +128,6 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
             resized_frame = cv2.resize(cropped_frame, (0,0), fx=0.25, fy=0.25)
 
             frame_image : Image = Image.fromarray(cropped_frame)
-            image_draw_frame = ImageDraw.ImageDraw(frame_image)
 
             id = "Unknown"
             name = "Unknown"
@@ -147,40 +148,36 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
             except:
                 print('No faces found')
 
-
             prev_name = name
-        
-            print('Time left:', round(time_left - time.time(), 1))
 
-            color = 'white'
+            # if mode == 'r':
+                # color = f'#ff{_value_to_hex(time_left - time.time(), 3, 255, True)}{_value_to_hex(time_left - time.time(), 3, 255, True)}'
+                # print('Registering new student!')
+            # elif mode == 'a':
+                # print('Taking attendance!')
+                # if name == 'Unknown':
+                    # color = 'red'
+                # color = f'#{_value_to_hex(time_left - time.time(), 3, 255)}ff{_value_to_hex(time_left - time.time(), 3, 255)}'
+# 
+            # if (name == prev_name) and (face_location != []):
+                # if mode == 'r' and name == 'Unknown':
+                    # if (time.time() > time_left):
+                        # student.set_temp_frame(cropped_frame)
+                        # master_window.destroy()
+                        # break
+                # elif mode == 'a' and name != 'Unknown':
+                    # if (time.time() > time_left):
+                        # student.id = id
+                        # student.submit_student(Tables.ATTENDANCE)
+                        # master_window.destroy()
+                        # break
+                # else:
+                    # time_left = time.time() + 3
+            # else:
+                # time_left = time.time() + 3
 
-            if mode == 'r':
-                color = f'#ff{_value_to_hex(time_left - time.time(), 3, 255, True)}{_value_to_hex(time_left - time.time(), 3, 255, True)}'
-                print('Registering new student!')
-            elif mode == 'a':
-                print('Taking attendance!')
-                if name == 'Unknown':
-                    color = 'red'
-                color = f'#{_value_to_hex(time_left - time.time(), 3, 255)}ff{_value_to_hex(time_left - time.time(), 3, 255)}'
+            display_time_left = round(time_left - time.time(), 2)
 
-
-            if (name == prev_name) and (face_location != []):
-                if mode == 'r' and name == 'Unknown':
-                    if (time.time() > time_left):
-                        student.set_temp_frame(cropped_frame)
-                        master_window.destroy()
-                        break
-                elif mode == 'a' and name != 'Unknown':
-                    if (time.time() > time_left):
-                        student.id = id
-                        student.submit_student(Tables.ATTENDANCE)
-                        master_window.destroy()
-                        break
-                else:
-                    time_left = time.time() + 3
-            else:
-                time_left = time.time() + 3
-                        
             text_to_draw = f"Name: {name}\nID: {id}\nCourse: {course}\nYear: {year}"
 
             if face_location != []:
@@ -190,13 +187,45 @@ def start_face_recognition(dest_label : tkinter.Label, master_window : tkinter.T
                 right *= 4
                 bottom *= 4
     
-                # color = f'#{_value_to_hex(time_left - time.time(), 3)}{_value_to_hex(time_left - time.time(), 3)}{_value_to_hex(time_left - time.time(), 3)}'
+                image_draw_frame = ImageDraw.ImageDraw(frame_image)
                 image_draw_frame.rectangle([left, top, right, bottom], width=10, outline=color) # The bounding square
                 image_font = ImageFont.truetype('src/lib/Lexend.ttf', size=15)
                 image_draw_frame.multiline_text([left, bottom, right, bottom + 50], text=text_to_draw, font=image_font, fill=color)
-
-
+                image_draw_frame.text([left, top - 20, right, top], text=f'Time left: {display_time_left}', font=image_font, fill=color)
             
             update_label_image(dest_label, frame_image)
 
-        process_this_frame = not process_this_frame
+            if (name == prev_name) and (face_location != []):
+                match mode:
+                    case 'r':
+                        color = f'#ff{_value_to_hex(time_left - time.time(), 3, 255, True)}{_value_to_hex(time_left - time.time(), 3, 255, True)}'
+                        
+                        if name != 'Unknown':
+                            print('Name is known! Can\'t register a new student with an existing face!')
+                            time_left = time.time() + 3
+                            continue
+                        
+                        if (time.time() > time_left):
+                            student.set_temp_frame(cropped_frame)
+                            master_window.destroy()
+                            break
+
+                        print(f'Time left: {display_time_left}')
+                        
+                    case 'a':
+                        color = f'#{_value_to_hex(time_left - time.time(), 3, 255)}ff{_value_to_hex(time_left - time.time(), 3, 255)}'
+                        
+                        if name == 'Unknown':
+                            print("Face is unknown! Can't take attendance using a face that is not registered!")
+                            time_left = time.time() + 3
+                            continue
+
+                        if (time.time() > time_left):
+                            student.id = id
+                            student.submit_student(Tables.ATTENDANCE)
+                            master_window.destroy()
+                            break
+
+                        print(f'Time left: {display_time_left}')
+            else:
+                time_left = time.time() + 3
