@@ -24,12 +24,12 @@ window.resizable(False, False)
 
 # Navigation Bar Frame
 nav_frame = ctk.CTkFrame(window, fg_color=palette.PRIMARY_2, corner_radius=0)
-nav_frame.place(relx = 0.0, relwidth=0.2, relheight=1.0)
+nav_frame.place(relx = 0.0, relwidth=0.3, relheight=1.0)
 nav_frame.propagate(False)
 
 # Main Frame
 main_frame = ctk.CTkFrame(window, fg_color=palette.PRIMARY_1)
-main_frame.place(relx=0.2, relwidth=0.8, relheight=1.0)
+main_frame.place(relx=0.3, relwidth=0.7, relheight=1.0)
 main_frame.propagate(False)
 
 class GUIController:

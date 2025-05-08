@@ -7,7 +7,7 @@ sys.path.append(parent_dir)
 
 from lib.db_interface import pull_from_db, Tables, RegStdsColumns, update_student, delete_student
 from lib.img_manip import bytes_to_image
-from components.student_form import PersonalInfoFrame, CourseFrame, StudentIDFrame, YearFrame, FaceDataFrame
+from components.student_form import NameFrame, CourseFrame, StudentIDFrame, YearFrame, FaceDataFrame
 
 
 # Font Default
@@ -18,16 +18,6 @@ def set_font_mono(size, weight):
   return ctk.CTkFont(family="Ubuntu Mono", size=size, weight=weight)
 
 def display_list(main_frame):
-
-  def relative_width(event):
-    tree_width = tree.winfo_width()
-
-    tree.column("ID", width=int(tree_width * 0.1), anchor="center")
-    tree.column("Name", width=int(tree_width * 0.35))
-    tree.column("Course", width=int(tree_width * 0.15))
-    tree.column("Year", width=int(tree_width * 0.15))
-    tree.column("Image", width=int(tree_width * 0.1))
-    tree.column("", width=int(tree_width * 0.1))
 
   def data_onclick(event):
     item = tree.identify_row(event.y)
@@ -51,38 +41,36 @@ def display_list(main_frame):
         # Toplevel
         edit_data = ctk.CTkToplevel(tree, fg_color=palette.PRIMARY_1)
         edit_data.title("Edit Student Data")
-        edit_data.geometry("800x800")
+        edit_data.geometry("480x800")
         edit_data.propagate(False)
         edit_data.resizable(False, False)
 
-        ctk.CTkLabel(master=edit_data, text="Edit Student Data", font=set_font_mono(42, "bold"), text_color=palette.TEXT_1).place(x=50, y=50)
+        ed_wrapper = ctk.CTkFrame(master=edit_data, fg_color="transparent", corner_radius=0)
+        ed_wrapper.place(relwidth=0.8, relheight=0.875, relx=0.5, rely=0.5, anchor="c" )
+        ctk.CTkLabel(master=ed_wrapper, text="Edit Student Data", font=set_font(36, "bold"), text_color=palette.TEXT_1).pack(anchor="w", pady=(0, 24))
+        
+        # Name
+        persinfo = NameFrame(master=ed_wrapper)
+        persinfo.pack(fill="x")
+        persinfo.name_entry.insert(0, values[1])
 
-        # Student Info Wrapper
-        studinf_wrapper = ctk.CTkFrame(master=edit_data, fg_color=palette.PRIMARY_2, corner_radius=16)
-        studinf_wrapper.place(relx=0.055, rely=0.4, relheight=0.4, relwidth=0.895)
-        studinf_wrapper.propagate(False)
-        ctk.CTkLabel(master=studinf_wrapper, text="Academic Information", font=set_font(28, "bold"), text_color="#d8d8d8").place(relx=0.025, rely=0.055)
-
+        acad_wrapper = ctk.CTkFrame(master=ed_wrapper, fg_color="transparent", corner_radius=0)
+        acad_wrapper.place(relx=0.3, rely=0.3, relwidth=0.60, anchor="n")
         # Student ID
-        stid = StudentIDFrame(master=studinf_wrapper)
-        stid.stid_label.configure(text="Stud. ID:")
-        stid.place(relx=0.025, rely=0.3, relwidth=0.3)
+        stid = StudentIDFrame(master=acad_wrapper)
+        stid.stid_label.configure(text="Student ID:")
+        stid.pack(pady=(0, 12), fill="x")
         stid.stid_entry.insert(0, values[0])
         old_stdid = values[0]
 
-        # Name
-        persinfo = PersonalInfoFrame(master=edit_data)
-        persinfo.place(relx=0.055, rely=0.175, relheight=0.2, relwidth=0.895, anchor="nw")
-        persinfo.name_entry.insert(0, values[1])
-  
         # Course
-        course_frame = CourseFrame(master=studinf_wrapper)
-        course_frame.place(relx=0.5, rely=0.3, relwidth=0.3, anchor="n")
+        course_frame = CourseFrame(master=acad_wrapper)
+        course_frame.pack(anchor="w", pady=(0, 12), fill="x")
         course_frame.course_var.set(values[2])
 
         # Year
-        year_frame = YearFrame(master=studinf_wrapper)
-        year_frame.place(relx=0.975, rely=0.3, relwidth=0.3, anchor="ne")
+        year_frame = YearFrame(master=acad_wrapper)
+        year_frame.pack(anchor="w", pady=(0, 12), fill="x")
         year_frame.year_var.set(values[3])
 
         def submit_button():
@@ -93,25 +81,9 @@ def display_list(main_frame):
           delete_student(old_stdid)
           edit_data.destroy()
 
-        # Save Button
-        submit_btn = ctk.CTkButton(
-          master=edit_data,
-          text="+ Save",
-          font=set_font(20, "bold"),
-          fg_color=palette.TONE_1,
-          text_color=palette.TEXT_2,
-          hover_color=palette.TONE_2,
-          border_width=0,
-          cursor="hand2",
-          height=50,
-          corner_radius=10,
-          command = submit_button
-        )
-        submit_btn.place(relx=0.95, rely=0.85, anchor="ne")
-        
         # Delete Button
         delete_btn = ctk.CTkButton(
-          master=edit_data,
+          master=ed_wrapper,
           text="- Delete",
           font=set_font(20, "bold"),
           fg_color=palette.PRIMARY_3,
@@ -123,40 +95,72 @@ def display_list(main_frame):
           corner_radius=10,
           command = delete_button
         )
-        delete_btn.place(relx=0.75, rely=0.85, anchor="ne")
+        delete_btn.place(relx=0.6, rely=1, anchor="se")
+
+        # Save Button
+        submit_btn = ctk.CTkButton(
+          master=ed_wrapper,
+          text="+ Save",
+          font=set_font(20, "bold"),
+          fg_color=palette.TONE_1,
+          text_color=palette.TEXT_2,
+          hover_color=palette.TONE_2,
+          border_width=0,
+          cursor="hand2",
+          height=50,
+          corner_radius=10,
+          command = submit_button
+        )
+        submit_btn.place(relx=1, rely=1, anchor="se")
+        
+
 
   main = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"))
   main.propagate(False)
   main.place(relx=0.5, rely=0.5, relwidth=0.9, relheight=0.9, anchor="c")
-
-  ctk.CTkLabel(master=main, text="Student Records", font=set_font_mono(48, "bold"), text_color=palette.TEXT_1).place(x=5, y=5)
   # Table Frame (tree + scrollbar)
   table_frame = ctk.CTkFrame(
     master=main, 
     fg_color=palette.PRIMARY_2,
-    corner_radius=16,
+    corner_radius=8,
   )
-  table_frame.place(relx=0.5, rely=0.175, relwidth=0.95, relheight=0.8, anchor="n")
+  table_frame.place(relx=0, rely=0, relwidth=1, relheight=1, anchor="nw")
 
   # Treeview
+  def relative_width(event):
+    tree_width = tree.winfo_width()
+
+    tree.column("ID", width=int(tree_width * 0.1), anchor="center")
+    tree.column("Name", width=int(tree_width * 0.35))
+    tree.column("Course", width=int(tree_width * 0.15), anchor="c")
+    tree.column("Year", width=int(tree_width * 0.15), anchor="c")
+    tree.column("Image", width=int(tree_width * 0.15), anchor="c")
+    tree.column("", width=int(tree_width * 0.1), anchor="c")
+
+  def block_header_drag(event):
+    if tree.identify_region(event.x, event.y) == "separator":
+        return "break"
+
+
   tree = ttk.Treeview(table_frame, columns=("ID", "Name", "Course", "Year", "Image", ""), show="headings")
   tree.heading("ID", text="ID")
   tree.heading("Name", text="Name", anchor="w")
-  tree.heading("Course", text="Course", anchor="w")
-  tree.heading("Year", text="Year", anchor="w")
-  tree.heading("Image", text="Image", anchor="w")
-  tree.heading("", text="", anchor="w")
+  tree.heading("Course", text="Course", anchor="c")
+  tree.heading("Year", text="Year", anchor="c")
+  tree.heading("Image", text="Image", anchor="c")
+  tree.heading("", text="", anchor="c")
 
   tree.bind("<Configure>", relative_width)
   tree.bind("<Button-1>", data_onclick)
+  tree.bind("<Button-1>", block_header_drag, add="+")
 
   # Scrollbar
-  scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=tree.yview)
+  scrollbar = ctk.CTkScrollbar(master=table_frame, orientation="vertical", command=tree.yview)
   tree.configure(yscrollcommand = scrollbar.set)
   
   # Styling
   style = ttk.Style()
-  style.theme_use("default")
+  style.theme_use("clam")
 
   # Tree Rows and Columns Styling
   style.configure(
@@ -202,19 +206,15 @@ def display_list(main_frame):
     troughcolor=table_frame["bg"]
   )
 
-  style.map(
-    "Vertical.TScrollbar",
-    background=[("active", palette.TONE_1), ("!active", palette.PRIMARY_3)]
-  )
-
   # Pack scrollbar and tree
   tree.pack(
     side="top",
     expand=True,
     fill="y",
-    pady=20,
+    pady=12,
+    padx=12,
   )
-  scrollbar.place(relx=0.96, rely=0.035, relheight=0.9)
+  scrollbar.place(anchor="e", relx=0.99, rely=0.525, relheight=0.9)
 
   img_array_map = {}
   # Display Database
@@ -230,7 +230,7 @@ def display_list(main_frame):
       row[:4] - sets cell value from index 0 to 3 (not including index 4 because it's then replaced by "View" text)
       """
       img_array = row[4]
-      masked_row = row[:4] + ("View", "Edit", )
+      masked_row = row[:4] + ("VIEW", "EDIT", )
       tree.insert("", "end", values=masked_row)
 
       img_array_map[row[0]] = img_array

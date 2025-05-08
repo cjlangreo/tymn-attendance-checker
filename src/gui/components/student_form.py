@@ -14,35 +14,56 @@ from lib.db_interface import Courses, Tables
 
 student = Student()
 
-class PersonalInfoFrame(ctk.CTkFrame):
+class NameFrame(ctk.CTkFrame):
   def __init__(self, master, **kwargs):
-    super().__init__(master, fg_color=palette.PRIMARY_2, corner_radius=16, **kwargs)
-    self.propagate(False)
+    super().__init__(master, fg_color="transparent", corner_radius=0, **kwargs)
 
-    ctk.CTkLabel(master=self, text="Personal Information", font=set_font(32, "bold"), text_color=palette.TEXT_1).place(relx=0.05, rely=0.085)
+    ctk.CTkLabel(master=self, text="Name", font=set_font(24, "bold"), text_color=palette.TEXT_1).pack(anchor="w", pady=(0, 12))
 
     self.name_entry = ctk.CTkEntry(
       master=self,
       font=set_font_mono(19, "normal"),
-      placeholder_text="Full Name (Last, First M.I.)",
+      placeholder_text="Dela Cruz, Juan A.",
       fg_color=palette.PRIMARY_3,
       text_color=palette.TEXT_1,
       corner_radius=4,
-      border_width=0
+      border_width=0,
+      height=56,
     )
-    self.name_entry.place(relx=0.5, rely=0.65, relwidth=0.9, relheight=0.35, anchor="c")
+    self.name_entry.pack(anchor="w", fill="x")
 
   def get_data(self):
     return self.name_entry.get()
 
+class StudentIDFrame(ctk.CTkFrame):
+  def __init__(self, master, **kwargs):
+    super().__init__(master, fg_color="transparent", border_color=palette.PRIMARY_4, **kwargs)
+
+    self.stid_label = ctk.CTkLabel(master=self, text="Student ID", font=set_font(20, "bold"), text_color=palette.TEXT_1)
+    self.stid_label.pack(anchor="w", pady=(0, 12))
+    self.stid_entry = ctk.CTkEntry(
+      master=self, 
+      font=set_font_mono(19, "normal"),
+      placeholder_text="####",
+      fg_color=palette.PRIMARY_3,
+      text_color=palette.TEXT_1,
+      border_width=0,
+      corner_radius=4,
+      height=50, 
+    )
+    self.stid_entry.pack(anchor="w", fill="x")
+  
+  def get_data(self):
+    return self.stid_entry.get()
+
 class CourseFrame(ctk.CTkFrame):
   def __init__(self, master, **kwargs):
-    super().__init__(master, fg_color="transparent", border_width=2, border_color=palette.PRIMARY_4, corner_radius=16, **kwargs)
+    super().__init__(master, fg_color="transparent", border_color=palette.PRIMARY_4, **kwargs)
 
-    self.course_var = tk.StringVar()
+    self.course_var = tk.StringVar(value=Courses.BSA)
 
     self.course_label = ctk.CTkLabel(master=self, text="Course", font=set_font(20, "bold"), fg_color="transparent", text_color=palette.TEXT_1)
-    self.course_label.pack(anchor="w", pady=15, padx=25)
+    self.course_label.pack(anchor="w", pady=(0,12))
 
     self.courses = [Courses.BSA, Courses.BSBA, Courses.BSCE, Courses.BSCS, Courses.BSEE, Courses.BSHM, Courses.BSIT, Courses.BSME, Courses.BSOA]
 
@@ -58,44 +79,20 @@ class CourseFrame(ctk.CTkFrame):
       font=set_font(16, "bold"),
       dropdown_font=set_font(18, "normal"),
       corner_radius=8,
-      
-      width=200,
       height=50
     )
-    self.options.pack(anchor="w", pady=(0, 25), padx=25)
+    self.options.pack(anchor="w", fill="x")
 
   def get_data(self):
       return self.course_var.get().strip()
 
-class StudentIDFrame(ctk.CTkFrame):
-  def __init__(self, master, **kwargs):
-    super().__init__(master, fg_color="transparent", border_width=2, border_color=palette.PRIMARY_4, corner_radius=16, **kwargs)
-
-    self.stid_label = ctk.CTkLabel(master=self, text="Student ID", font=set_font(20, "bold"), text_color=palette.TEXT_1)
-    self.stid_label.pack(anchor="w", pady=15, padx=25)
-    self.stid_entry = ctk.CTkEntry(
-      master=self, 
-      font=set_font_mono(19, "normal"),
-      placeholder_text="####",
-      fg_color=palette.PRIMARY_3,
-      text_color=palette.TEXT_1,
-      border_width=0,
-      corner_radius=4,
-      height=50, 
-      width=200,
-    )
-    self.stid_entry.pack(anchor="w", pady=(0, 25), padx=25)
-  
-  def get_data(self):
-    return self.stid_entry.get()
-
 class YearFrame(ctk.CTkFrame):
   def __init__(self, master, **kwargs):
-    super().__init__(master, fg_color="transparent", border_width=2, border_color=palette.PRIMARY_4, corner_radius=16, **kwargs)
+    super().__init__(master, fg_color="transparent", border_color=palette.PRIMARY_4, **kwargs)
 
-    self.year_var = tk.StringVar()
+    self.year_var = tk.StringVar(value="1")
     self.year_label = ctk.CTkLabel(master=self, text="Year", font=set_font(20, "bold"), fg_color="transparent", text_color=palette.TEXT_1)
-    self.year_label.pack(anchor="w", pady=15, padx=25)
+    self.year_label.pack(anchor="w", pady=(0, 12))
 
     self.options = ctk.CTkOptionMenu(
       master=self, 
@@ -109,36 +106,36 @@ class YearFrame(ctk.CTkFrame):
       font=set_font(16, "bold"),
       dropdown_font=set_font(18, "normal"),
       corner_radius=8,
-      width=180,
       height=50
     )
-    self.options.pack(anchor="w", pady=(0, 25), padx=25)
+    self.options.pack(anchor="w", fill="x")
 
   def get_data(self):
     return self.year_var.get().strip()
 
 class FaceDataFrame(ctk.CTkFrame):
   def __init__(self, master, **kwargs):
-    super().__init__(master, fg_color=palette.PRIMARY_2, corner_radius=16, **kwargs)
-    self.propagate(False)
+    super().__init__(master, fg_color=palette.PRIMARY_2, **kwargs)
 
-    self.frame_label = ctk.CTkLabel(master=self, text="Facial Data", font=set_font(32, "bold"), text_color=palette.TEXT_1).place(relx=0.05, rely=0.085)
-    self.face_registered_indicator = ctk.CTkLabel(master=self, text="", font=set_font(24, "normal"), text_color=palette.TONE_2)
-    self.face_registered_indicator.place(relx=0.9, rely=0.375, anchor="e")
+    self.frame_label = ctk.CTkLabel(master=self, text="Facial Data", font=set_font(24, "bold"), text_color=palette.TEXT_1).pack(anchor="w", pady=(0, 12))
+    self.face_registered_indicator = ctk.CTkLabel(master=self, text="", font=set_font(8, "normal"), text_color=palette.TONE_2)
+    self.face_registered_indicator.place(rely=1, relx=1, anchor="e")
     student.label_indicator = self.face_registered_indicator
 
     self.camera_btn = ctk.CTkButton(
       master=self,
       text="Register Face",
-      font=set_font(24, "bold"),
+      font=set_font(20, "bold"),
       border_width=2,
+      width=256,
+      height=56,
       corner_radius=12,
       border_color=palette.PRIMARY_3,
       text_color=palette.TEXT_1,
       fg_color=palette.PRIMARY_2,
       command=lambda: open_register_window(self)
     )
-    self.camera_btn.place(relx=0.5, rely=0.65, relwidth=0.8, relheight=0.35, anchor="c")
+    self.camera_btn.pack(anchor="w")
     student.register_button = self.camera_btn
 
 # Font Default
@@ -171,19 +168,16 @@ def display_form(main_frame):
   Method to save entries to database
   """
   def event_listener(event, index):
-     widgets = [persinfo.name_entry, stid.stid_entry, course_frame.course_btns, year_frame.year_btns]
+     widgets = [nameinfo.name_entry, stid.stid_entry]
      match index:
         case 0|1:
            widgets[index].configure(border_width=0)
-        # case 2|3:
-        #    for btn in widgets[index]:
-        #       btn.configure(border_color=)
 
   def add_student():
     # Populat the student object with the entries ======================
     global student
     student.id = stid.get_data()
-    student.name = persinfo.get_data()
+    student.name = nameinfo.get_data()
     student.course = course_frame.get_data()
     student.year = year_frame.get_data()
 
@@ -193,13 +187,9 @@ def display_form(main_frame):
     #Checks for any invalid or empty entries
     if not student.id or not student.name or not student.course or not student.year or student.temp_frame is None:
       if not student.name:
-         persinfo.name_entry.configure(border_width=2, border_color="red")
+         nameinfo.name_entry.configure(border_width=2, border_color="red")
       if not student.id:
-        stid.configure(border_width=2,  border_color="red")
-      if not student.course:
-        course_frame.configure(border_width=2,  border_color="red")
-      if not student.year:
-        year_frame.configure(border_width=2,  border_color="red")
+        stid.stid_entry.configure(border_width=2,  border_color="red")
       if student.temp_frame is None:
         facedata_frame.camera_btn.configure(border_width=2,  border_color="red")
 
@@ -213,7 +203,7 @@ def display_form(main_frame):
 
     student.submit_student(Tables.REGISTERED_STUDENTS)
   
-    persinfo.name_entry.delete(0, "end")
+    nameinfo.name_entry.delete(0, "end")
     stid.stid_entry.delete(0, "end")
     course_frame.course_var.set(0)
     year_frame.year_var.set(0)
@@ -248,59 +238,64 @@ def display_form(main_frame):
   style.theme_use("clam")
   # == CSS ENDS HERE ===
 
-  main = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"))
+  main = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"), corner_radius=0)
   main.propagate(False)
-  main.place(relwidth=1.0, relheight=1.0, x=0, y=0)
+  main.place(relwidth=0.7, relheight=0.85, relx=0.5, rely=0.5, anchor="center")
 
-  ctk.CTkLabel(master=main, text="Add Student Record", font=set_font_mono(48, "bold"), text_color=palette.TEXT_1).place(relx=0.055, rely=0.075, anchor="nw")
+  ctk.CTkLabel(master=main, text="Personal Information", font=set_font(32, "bold"), text_color=palette.TEXT_1).pack(anchor="w", pady=(0, 16))
 
+  persinfo_wrapper = ctk.CTkFrame(master=main, fg_color=palette.PRIMARY_2, corner_radius=12)
+  persinfo_wrapper.pack(fill="x")
 # Name =====================================
-  persinfo = PersonalInfoFrame(master=main)
-  persinfo.place(relx=0.055, rely=0.2, relheight=0.2, relwidth=0.45, anchor="nw")
 
-  persinfo.name_entry.bind("<KeyPress>", lambda event: event_listener(event, 0))
+  nameinfo = NameFrame(master=persinfo_wrapper)
+  nameinfo.pack(fill="x", padx=24, pady=(24, 12))
+
+  nameinfo.name_entry.bind("<KeyPress>", lambda event: event_listener(event, 0))
      
   # Wrapper
   # 414x230
 
 # Face Registration =========================================
-  facedata_frame = FaceDataFrame(master=main)
-  facedata_frame.place(relx=0.95, rely=0.2, relheight=0.2, relwidth=0.425, anchor="ne")
+  facedata_frame = FaceDataFrame(master=persinfo_wrapper)
+  facedata_frame.pack(fil="x", pady=(12, 24), padx=24)
 
 # STUDENT INFO WRAPPER =================== 
-  studinf_frame = ctk.CTkFrame(master=main, fg_color=palette.PRIMARY_2, corner_radius=16)
-  studinf_frame.place(relx=0.055, rely=0.425, relheight=0.35, relwidth=0.895)
-  studinf_frame.propagate(False)
+  ctk.CTkLabel(master=main, text="Academic Information", font=set_font(32, "bold"), text_color=palette.TEXT_1).pack(anchor="w", pady=(48,16))
 
-  ctk.CTkLabel(master=studinf_frame, text="Academic Information", font=set_font(36, "bold"), text_color=palette.TEXT_1).place(relx=0.025, rely=0.055)
-  
+  studinf_frame = ctk.CTkFrame(master=main, fg_color=palette.PRIMARY_2, corner_radius=12)
+  studinf_frame.pack(fill="x")
+  studinf_frame.grid_columnconfigure(0, weight=1)
+  studinf_frame.grid_columnconfigure(1, weight=1)
+  studinf_frame.grid_columnconfigure(2, weight=1)
+
 
 # Student ID
   stid = StudentIDFrame(master=studinf_frame)
-  stid.place(relx=0.045, rely=0.35, relwidth=0.275)
+  stid.grid(row=0, column=0, sticky="nsew", pady=24, padx=(24, 12))
   stid.stid_entry.bind("<KeyPress>", lambda event: event_listener(event, 1))
 
 # Course 
   course_frame = CourseFrame(master=studinf_frame)
-  course_frame.place(relx=0.5, rely=0.35, relwidth=0.275, anchor="n")
+  course_frame.grid(row=0, column=1, sticky="nsew", pady=24, padx=12)
 
 # Year
   year_frame = YearFrame(master=studinf_frame)
-  year_frame.place(relx=0.955, rely=0.35, relwidth=0.275, anchor="ne")
+  year_frame.grid(row=0, column=2, sticky="nsew", pady=24, padx=(12, 24))
 
 # Submit
   submit_data = ctk.CTkButton(
     master=main,
-    text="SUBMIT",
-    font=set_font_mono(24, "bold"),
+    text="Submit",
+    font=set_font(24, "bold"),
     fg_color=palette.TONE_1,
     text_color=palette.TEXT_2,
     border_width=0,
     cursor="hand2",
     height=60,
     width=200,
-    corner_radius=16,
+    corner_radius=8,
     command=add_student
   )
-  submit_data.place(relx=0.5, rely=0.875, anchor="center")
+  submit_data.place(relx=0.5, rely=1, anchor="s")
 

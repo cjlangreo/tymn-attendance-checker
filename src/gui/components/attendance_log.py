@@ -42,7 +42,7 @@ def set_font_mono(size, weight):
   return ctk.CTkFont(family="Ubuntu Mono", size=size, weight=weight)
 
 def display_log(main_frame):
-  main = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"))
+  main = ctk.CTkFrame(master=main_frame, fg_color=main_frame.cget("fg_color"), corner_radius=0)
   main.propagate(False)
   main.place(relx=0.5, rely=0.5, relwidth=0.9, relheight=0.9, anchor="c")
 
@@ -50,18 +50,18 @@ def display_log(main_frame):
   ctk.CTkLabel(
      master=main, 
      text="Attendance",
-     font=set_font_mono(48, "bold"),
+     font=set_font_mono(36, "bold"),
      text_color=palette.TEXT_1
-    ).place(relx=0.85, rely=0.1, anchor="c")
+    ).place(relx=0.875, rely=0.1, anchor="c")
 
   # Clock ========================================
   day = ctk.CTkLabel(master=main, text=f"{dt.datetime.now():%A}", font=set_font(24, "bold"))
-  day.place(relx=0.85, rely=0.25, anchor="c")
+  day.place(relx=0.875, rely=0.25, anchor="c")
   date = ctk.CTkLabel(master=main, text=f"{dt.datetime.now():%B %d, %Y}", font=set_font(24, "bold"))
-  date.place(relx=0.85, rely=0.3, anchor="c")
+  date.place(relx=0.875, rely=0.3, anchor="c")
 
   time = ctk.CTkLabel(master=main, font=set_font(32, "bold"))
-  time.place(relx=0.85, rely=0.4, anchor="c")
+  time.place(relx=0.875, rely=0.4, anchor="c")
 
   def clock():
     datetime = dt.datetime.now() 
@@ -75,41 +75,41 @@ def display_log(main_frame):
   scan_btn = ctk.CTkButton(
     master=main,
     text="Scan",
-    font=set_font(28, "bold"),
-    fg_color=palette.TONE_2,
+    font=set_font(20, "bold"),
+    fg_color=palette.TONE_1,
     text_color=palette.TEXT_2,
     border_width=0,
     cursor="hand2",
-    height=75,
-    width=256,
-    corner_radius=16,
+    height=50,
+    width=164,
+    corner_radius=8,
     command=lambda : open_register_window(main_frame)
   )
-  scan_btn.place(relx=0.85, rely=0.6, anchor="c")
+  scan_btn.place(relx=0.875, rely=0.6, anchor="c")
   # Table =========================================
   table_frame = ctk.CTkFrame(
     master=main, 
     fg_color=palette.PRIMARY_2,
-    corner_radius=16,
+    corner_radius=8,
   )
-  table_frame.place(relx=0, rely=0.5, relwidth=0.67, relheight=0.95, anchor="w")
+  table_frame.place(relx=0, rely=0.5, relwidth=0.70, relheight=1, anchor="w")
 
   tree = ttk.Treeview(master=table_frame, columns=("Name", "Date", "Time"), show="headings")
   
   def relative_width(event):
     tree_width = tree.winfo_width()
 
-    tree.column("Name", width=int(tree_width * 0.4), stretch=False)
-    tree.column("Time", width=int(tree_width * 0.3), stretch=False, anchor="c")
+    tree.column("Name", width=int(tree_width * 0.5), stretch=False, anchor="w")
+    tree.column("Time", width=int(tree_width * 0.2), stretch=False, anchor="c")
     tree.column("Date", width=int(tree_width * 0.3), stretch=False, anchor="c")
 
   def block_header_drag(event):
     if tree.identify_region(event.x, event.y) == "separator":
         return "break"
 
-  tree.heading("Name", text="Name")
-  tree.heading("Time", text="Time")
-  tree.heading("Date", text="Date")
+  tree.heading("Name", text="Name", anchor="w")
+  tree.heading("Time", text="Time", anchor="c")
+  tree.heading("Date", text="Date", anchor="c")
 
   tree.bind("<Configure>", relative_width)
   tree.bind("<Button-1>", block_header_drag, add="+")
@@ -137,11 +137,28 @@ def display_log(main_frame):
     foreground=palette.TEXT_2
   )
 
+  style.map(
+    "Treeview",
+    background=[("selected", palette.PRIMARY_2)],
+    foreground=[("selected", palette.TEXT_1)]
+  )
+
+  style.map(
+    "Treeview.Heading",
+    background=[("active", palette.TONE_2)], 
+    foreground=[("active", palette.TEXT_2)] 
+  )
+
+  scrollbar = ctk.CTkScrollbar(master=table_frame, orientation="vertical", command=tree.yview)
+  tree.configure(yscrollcommand = scrollbar.set)
+  scrollbar.place(anchor="e", relx=0.985, rely=0.525, relheight=0.9)
+
   tree.pack(
     side="top",
     expand=True,
     fill="y",
-    pady=20,
+    pady=12,
+    padx=12,
   )
 
   # Display Database
