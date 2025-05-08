@@ -55,12 +55,12 @@ def display_log(main_frame):
     ).place(relx=0.875, rely=0.1, anchor="c")
 
   # Clock ========================================
-  day = ctk.CTkLabel(master=main, text=f"{dt.datetime.now():%A}", font=set_font(24, "bold"))
+  day = ctk.CTkLabel(master=main, text=f"{dt.datetime.now():%A}", font=set_font(24, "bold"), text_color=palette.TEXT_1)
   day.place(relx=0.875, rely=0.25, anchor="c")
-  date = ctk.CTkLabel(master=main, text=f"{dt.datetime.now():%B %d, %Y}", font=set_font(24, "bold"))
+  date = ctk.CTkLabel(master=main, text=f"{dt.datetime.now():%B %d, %Y}", font=set_font(24, "bold"), text_color=palette.TEXT_1)
   date.place(relx=0.875, rely=0.3, anchor="c")
 
-  time = ctk.CTkLabel(master=main, font=set_font(32, "bold"))
+  time = ctk.CTkLabel(master=main, font=set_font(32, "bold"), text_color=palette.TEXT_1)
   time.place(relx=0.875, rely=0.4, anchor="c")
 
   def clock():

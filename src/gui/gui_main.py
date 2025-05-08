@@ -17,7 +17,7 @@ for record in records:
 
 # Create a window
 window = ctk.CTk()
-window.title("Apprizz")
+window.title("Tymn")
 window.geometry("1366x768")
 window.configure(fg_color=palette.PRIMARY_1)
 window.resizable(False, False)
