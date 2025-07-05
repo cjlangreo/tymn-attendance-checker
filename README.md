@@ -1,27 +1,16 @@
-# README
+# TYMN, A Facial Recognition Student Attendance Checker
+
+## Introduction
+Developed as a school project. Tymn uses a pre-trained AI to recognize students' faces recorded in a database to take their attendance if previous records are found, if not, uses their facial data to register them as a new student. Also has the ability to use your Android phone's camera for the facial recognition.
 
 
-## Clone the repository
-`git clone https://github.com/BirbDoy1221/scrcpy-facial-recognition`
+## Development
+- This project was developed using
+[Python](https://www.python.org),
+[SQLite](https://www.sqlite.org/),
+[Pillow](https://pypi.org/project/pillow/),
+and [CustomTkinter](https://customtkinter.tomschimansky.com/).
+
+- [Scrcpy](https://github.com/Genymobile/scrcpy) was also used to create a custom script that allows users to user their Android phone as a camera to use with the application.
 
 
-## Create a virtual environment and install required modules
-`python3.10 -m venv .venv`
-
-`source .venv/bin/activate`
-
-Check if your pip3 uses the venv by running `which pip3` which returns the pip3 location.
-
-`pip3 install -r requirements.txt`
-
-## Running the recognition test
-
-    Do this to use your phone as a camera
-    1. Create a new terminal
-    2. Execute `sudo modprobe v4l2loopback`
-    3. Navigate to src/webcamera
-    4. Pair your device with `adb pair`
-    5. Connect your device with `adb connect`
-    6. `bash camera.sh`
-
-1. `python3 src/main.py`
