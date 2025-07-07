@@ -20,12 +20,12 @@ Developed as a school project. Tymn uses a pre-trained AI to recognize students'
 ## Face Recognition
 
 TYMN uses [Adam Geitgey's face_recognition API](https://github.com/ageitgey/face_recognition) under the hood for its face recognition feature.
-- Adding new student to the database
-- Attendance check by facial recognition
-<p>
-  <img src="./thumbnails/sample.gif" alt="add-student.gif" style="width: 48%">
-  <img src="./thumbnails/sample2.gif" alt="attendance-student.gif" style="width: 48%">
-</p>
+
+  <h4>Adding new student to the database:</h4>
+  <img src="./thumbnails/sample.gif" alt="add-student.gif" style="width: 66%">
+  
+  <h4>Attendance check by facial recognition:</h4>
+  <img src="./thumbnails/sample2.gif" alt="attendance-student.gif" style="width: 66%">
 
 ## User Interface
 
